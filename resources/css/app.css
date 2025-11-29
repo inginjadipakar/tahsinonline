@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+    /* Base Glass Styles */
+    .glass {
+        @apply backdrop-blur-md shadow-xl;
+    }
+
+    .glass-card {
+        @apply rounded-2xl p-6 transition-all duration-300 backdrop-blur-md shadow-xl;
+    }
+
+    /* Dark Mode (Default) */
+    .dark .glass {
+        @apply bg-islamic-navy-light/60 border border-white/10;
+    }
+
+    .dark .glass-card {
+        @apply bg-islamic-navy-light/60 border border-white/10 hover:bg-islamic-navy-light/70 hover:border-islamic-gold/30;
+    }
+
+    .dark .glass-btn {
+        @apply bg-islamic-gold/90 hover:bg-islamic-gold text-islamic-navy font-bold py-2 px-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-islamic-gold/20 hover:-translate-y-0.5;
+    }
+
+    /* Light Mode (White/Green) */
+    .glass {
+        @apply bg-white/80 border border-islamic-emerald/20;
+    }
+
+    .glass-card {
+        @apply bg-white/80 border border-islamic-emerald/20 hover:bg-white/90 hover:border-islamic-emerald/40;
+    }
+
+    .glass-btn {
+        @apply bg-islamic-emerald hover:bg-islamic-emerald-dark text-white font-bold py-2 px-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-islamic-emerald/20 hover:-translate-y-0.5;
+    }
+}
+
+body {
+    @apply font-sans antialiased transition-colors duration-300;
+    background-image: url('https://www.transparenttextures.com/patterns/arabesque.png');
+}
+
+/* Dark Mode Body */
+.dark body {
+    @apply bg-islamic-navy text-white;
+    background-blend-mode: overlay;
+}
+
+/* Light Mode Body */
+body:not(.dark) {
+    @apply bg-gray-50 text-gray-800;
+    background-blend-mode: multiply;
+}

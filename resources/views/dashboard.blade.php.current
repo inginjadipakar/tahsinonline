@@ -1,0 +1,321 @@
+<x-app-layout>
+    {{-- ================= MOBILE LAYOUT ================= --}}
+    <div class="md:hidden bg-white min-h-screen pb-20">
+        {{-- Subscription Banner --}}
+        @php
+            $subscription = auth()->user()->subscription;
+            $hasActiveSubscription = $subscription && $subscription->status === 'active';
+        @endphp
+        
+        @if(!$hasActiveSubscription)
+        <div class="mx-4 mt-4 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl p-4 flex items-center gap-3">
+            <div class="bg-white/20 rounded-lg p-2 flex-shrink-0">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <div class="flex-1 text-white">
+                <div class="font-bold text-sm">Belum Berlangganan</div>
+                <div class="text-xs opacity-90">Aktifkan langganan untuk akses penuh</div>
+            </div>
+            <a href="{{ route('student.subscription.index') }}" class="bg-white text-red-600 px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap">
+                Berlangganan
+            </a>
+        </div>
+        @endif
+
+        {{-- Hero Section --}}
+        <div class="mx-4 mt-4">
+            <div class="relative rounded-3xl overflow-hidden shadow-2xl h-[400px]">
+                <img src="https://images.unsplash.com/photo-1609599006353-e629aaabfeae?q=80&w=2070" 
+                     class="w-full h-full object-cover" alt="Quran">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                
+                <div class="absolute bottom-0 left-0 right-0 p-6">
+                    @if($enrolledClass)
+                        <div class="inline-flex items-center gap-2 mb-4">
+                            <span class="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-md shadow-lg uppercase tracking-wider">Kelas Anda</span>
+                            <span class="text-white text-sm font-semibold" style="text-shadow: 0 2px 8px rgba(0,0,0,0.9);">Tahsin Online</span>
+                        </div>
+                        
+                        <h2 class="text-3xl md:text-4xl font-extrabold mb-3 leading-tight text-white" style="text-shadow: 0 4px 16px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,0.9);">
+                            {{ $enrolledClass->name }}
+                        </h2>
+                        
+                        <p class="text-base text-white mb-5 leading-relaxed max-w-lg" style="text-shadow: 0 3px 10px rgba(0,0,0,1), 0 2px 6px rgba(0,0,0,0.8);">
+                            {{ $enrolledClass->description }}
+                        </p>
+                        
+                        <div class="mb-5">
+                            @php
+                                $totalLessons = $lessons->count();
+                                $completedCount = $lessons->filter(fn($l) => $l['isCompleted'])->count();
+                                $progress = $totalLessons > 0 ? round(($completedCount / $totalLessons) * 100) : 0;
+                            @endphp
+                            <div class="flex items-baseline gap-3 mb-3">
+                                <span class="text-2xl font-bold text-white" style="text-shadow: 0 3px 12px rgba(0,0,0,1), 0 2px 6px rgba(0,0,0,0.9);">Progress: {{ $progress }}%</span>
+                                <span class="text-sm font-medium text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.8);">({{ $completedCount }}/{{ $totalLessons }} Materi Selesai)</span>
+                            </div>
+                            <div class="w-full max-w-md bg-black/30 backdrop-blur-sm rounded-full h-2.5 overflow-hidden shadow-inner">
+                                <div class="bg-gradient-to-r from-green-400 to-emerald-500 h-full rounded-full transition-all duration-500 shadow-lg" style="width: {{ $progress }}%"></div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="inline-flex items-center gap-2 mb-4">
+                            <span class="bg-gradient-to-r from-red-600 to-rose-600 text-white text-xs font-bold px-3 py-1.5 rounded-md shadow-lg uppercase tracking-wider">New</span>
+                            <span class="text-white text-sm font-semibold" style="text-shadow: 0 2px 8px rgba(0,0,0,0.9);">Tahsin Online</span>
+                        </div>
+                        
+                        <h2 class="text-3xl md:text-4xl font-extrabold mb-3 leading-tight text-white" style="text-shadow: 0 4px 16px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,0.9);">
+                            Tahsin Al-Qur'an:<br>Belajar Huruf Hijaiyah
+                        </h2>
+                        
+                        <p class="text-base text-white mb-4 leading-relaxed" style="text-shadow: 0 3px 10px rgba(0,0,0,1), 0 2px 6px rgba(0,0,0,0.8);">Mulai perjalanan tahsin Al-Qur'an Anda dengan bimbingan terbaik</p>
+                        
+                        <div class="text-2xl font-bold text-white mb-5" style="text-shadow: 0 3px 12px rgba(0,0,0,1), 0 2px 6px rgba(0,0,0,0.9);">Berlangganan untuk akses penuh</div>
+                    @endif
+                    
+                    <a href="{{ route('student.my-class') }}" class="bg-white text-black px-8 py-3 rounded-lg font-bold flex items-center gap-2 mb-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
+                        </svg>
+                        Mulai Belajar
+                    </a>
+                    <button class="bg-gray-600/70 text-white px-8 py-3 rounded-lg font-bold flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Info Selengkapnya
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Lessons Section --}}
+        <div class="px-4 mt-6">
+            <h3 class="text-xl font-bold mb-4">Materi Pembelajaran</h3>
+            <div class="space-y-3">
+                @foreach($lessons as $lessonData)
+                    @php
+                        $lesson = $lessonData['lesson'];
+                        $isLocked = $lessonData['isLocked'];
+                        $isCompleted = $lessonData['isCompleted'];
+                        $isCurrent = $lessonData['isCurrent'];
+                    @endphp
+                    
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100">
+                        <div class="relative h-40">
+                            <div class="absolute inset-0 bg-gradient-to-br {{ $isCompleted ? 'from-green-400 to-emerald-500' : ($isCurrent ? 'from-blue-400 to-purple-500' : 'from-gray-400 to-gray-500') }}">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    @if($isCompleted)
+                                        <svg class="w-16 h-16 text-white/30" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                    @elseif($isCurrent)
+                                        <svg class="w-16 h-16 text-white/30" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
+                                        </svg>
+                                    @else
+                                        <svg class="w-16 h-16 text-white/30" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                    @endif
+                                </div>
+                            </div>
+                            @if($isCompleted)
+                                <span class="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-bold">✓ Selesai</span>
+                            @elseif($isCurrent)
+                                <span class="absolute top-3 right-3 bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-bold animate-pulse">● Sedang Dipelajari</span>
+                            @else
+                                <span class="absolute top-3 right-3 bg-gray-500 text-white text-xs px-3 py-1 rounded-full font-bold">🔒 Terkunci</span>
+                            @endif
+                        </div>
+                        <div class="p-4">
+                            <div class="text-xs text-gray-500 mb-1">Materi {{ $lesson->order }}</div>
+                            <h4 class="font-bold text-lg mb-2">{{ $lesson->title }}</h4>
+                            <p class="text-sm text-gray-600 mb-3">{{ Str::limit($lesson->description, 60) }}</p>
+                            @if(!$isLocked)
+                                <a href="{{ route('student.lessons.show', $lesson) }}" class="block text-center bg-{{ $isCompleted ? 'green' : 'blue' }}-500 text-white px-4 py-2 rounded-lg font-semibold">
+                                    {{ $isCurrent ? 'Lanjutkan' : ($isCompleted ? 'Ulangi' : 'Mulai') }}
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    {{-- ================= DESKTOP LAYOUT ================= --}}
+    <div class="hidden md:flex flex-col gap-6 py-8 max-w-7xl mx-auto px-6">
+        {{-- Subscription Banner --}}
+        @php
+            $subscription = auth()->user()->subscription;
+            $hasSubscription = $subscription && $subscription->status === 'active';
+            $daysLeft = $hasSubscription ? now()->diffInDays($subscription->end_date, false) : 0;
+            $isExpiringSoon = $hasSubscription && $daysLeft > 0 && $daysLeft <= 7;
+            $isExpired = $subscription && $daysLeft <= 0;
+        @endphp
+        
+        @if($hasSubscription && !$isExpired)
+            <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <h3 class="text-lg font-bold">Langganan Aktif</h3>
+                            <span class="bg-white/30 text-white text-xs font-semibold px-2 py-1 rounded-full">PREMIUM</span>
+                        </div>
+                        <p class="text-white/90 text-sm">
+                            @if($isExpiringSoon)
+                                ⚠️ Berakhir dalam {{ $daysLeft }} hari ({{ $subscription->end_date->format('d M Y') }})
+                            @else
+                                Aktif hingga {{ $subscription->end_date->format('d M Y') }} ({{ $daysLeft }} hari lagi)
+                            @endif
+                        </p>
+                    </div>
+                    @if($isExpiringSoon)
+                        <a href="{{ route('student.subscription.index') }}" class="bg-white text-green-600 px-6 py-2.5 rounded-lg font-semibold hover:bg-green-50 transition-colors">
+                            Perpanjang Sekarang
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @elseif($isExpired || !$hasSubscription)
+            <div class="bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl p-6 text-white shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold mb-2">{{ $isExpired ? 'Langganan Berakhir' : 'Belum Berlangganan' }}</h3>
+                        <p class="text-white/90 text-sm">Aktifkan langganan untuk akses penuh ke semua materi pembelajaran</p>
+                    </div>
+                    <a href="{{ route('student.subscription.index') }}" class="bg-white text-red-600 px-6 py-2.5 rounded-lg font-semibold hover:bg-red-50 transition-colors">
+                        Berlangganan Sekarang
+                    </a>
+                </div>
+            </div>
+        @endif
+
+        {{-- Hero Section --}}
+        <div class="relative rounded-2xl overflow-hidden shadow-2xl h-[500px]">
+            <img src="https://images.unsplash.com/photo-1609599006353-e629aaabfeae?q=80&w=2070" 
+                 class="w-full h-full object-cover" alt="Quran">
+            <div class="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+            
+            <div class="absolute inset-0 flex items-center">
+                <div class="px-12 max-w-2xl">
+                    @if($enrolledClass)
+                        <div class="inline-flex items-center gap-3 mb-5">
+                            <span class="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-xl uppercase tracking-wider">Kelas Anda</span>
+                            <span class="text-white text-lg font-semibold" style="text-shadow: 0 2px 10px rgba(0,0,0,1);">Tahsin Online</span>
+                        </div>
+                        
+                        <h1 class="text-5xl lg:text-6xl font-extrabold mb-5 leading-tight text-white" style="text-shadow: 0 6px 20px rgba(0,0,0,1), 0 4px 12px rgba(0,0,0,0.9), 0 2px 6px rgba(0,0,0,0.8);">
+                            {{ $enrolledClass->name }}
+                        </h1>
+                        
+                        <p class="text-xl lg:text-2xl text-white mb-6 leading-relaxed max-w-2xl" style="text-shadow: 0 4px 14px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,0.9);">
+                            {{ $enrolledClass->description }}
+                        </p>
+                        
+                        <div class="mb-8">
+                            @php
+                                $totalLessons = $lessons->count();
+                                $completedCount = $lessons->filter(fn($l) => $l['isCompleted'])->count();
+                                $progress = $totalLessons > 0 ? round(($completedCount / $totalLessons) * 100) : 0;
+                            @endphp
+                            <div class="flex items-baseline gap-4 mb-4">
+                                <span class="text-4xl font-bold text-white" style="text-shadow: 0 4px 16px rgba(0,0,0,1), 0 2px 10px rgba(0,0,0,0.9);">Progress: {{ $progress }}%</span>
+                                <span class="text-xl font-semibold text-white" style="text-shadow: 0 3px 12px rgba(0,0,0,1), 0 2px 6px rgba(0,0,0,0.9);">({{ $completedCount }}/{{ $totalLessons }} Materi Selesai)</span>
+                            </div>
+                            <div class="w-full max-w-xl bg-black/30 backdrop-blur-sm rounded-full h-4 overflow-hidden shadow-inner">
+                                <div class="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 h-full rounded-full transition-all duration-500 shadow-lg" style="width: {{ $progress }}%"></div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="inline-flex items-center gap-3 mb-5">
+                            <span class="bg-gradient-to-r from-red-600 to-rose-600 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-xl uppercase tracking-wider">New</span>
+                            <span class="text-white text-lg font-semibold" style="text-shadow: 0 2px 10px rgba(0,0,0,1);">Tahsin Online</span>
+                        </div>
+                        
+                        <h1 class="text-5xl lg:text-6xl font-extrabold mb-5 leading-tight text-white" style="text-shadow: 0 6px 20px rgba(0,0,0,1), 0 4px 12px rgba(0,0,0,0.9), 0 2px 6px rgba(0,0,0,0.8);">
+                            Tahsin Al-Qur'an:<br>Belajar Huruf Hijaiyah
+                        </h1>
+                        
+                        <p class="text-xl lg:text-2xl text-white mb-6 leading-relaxed" style="text-shadow: 0 4px 14px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,0.9);">Mulai perjalanan tahsin Al-Qur'an Anda dengan bimbingan terbaik</p>
+                        
+                        <div class="text-4xl font-bold text-white mb-8" style="text-shadow: 0 4px 16px rgba(0,0,0,1), 0 2px 10px rgba(0,0,0,0.9);">Berlangganan untuk akses penuh</div>
+                    @endif
+                    
+                    <div class="flex gap-3">
+                        <a href="{{ route('student.my-class') }}" class="bg-white text-black px-8 py-3 rounded-lg font-bold flex items-center gap-2 hover:bg-gray-200 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
+                            </svg>
+                            Mulai Belajar
+                        </a>
+                        <button class="bg-gray-600/70 backdrop-blur-sm text-white px-8 py-3 rounded-lg font-bold flex items-center gap-2 hover:bg-gray-600 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Info Selengkapnya
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Lessons Grid --}}
+        <div>
+            <h2 class="text-2xl font-bold mb-6">Materi Pembelajaran</h2>
+            <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @foreach($lessons as $lessonData)
+                    @php
+                        $lesson = $lessonData['lesson'];
+                        $isLocked = $lessonData['isLocked'];
+                        $isCompleted = $lessonData['isCompleted'];
+                        $isCurrent = $lessonData['isCurrent'];
+                    @endphp
+                    
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:scale-105 {{ !$isLocked ? 'cursor-pointer' : '' }}"
+                         onclick="{{ !$isLocked ? "window.location='" . route('student.lessons.show', $lesson) . "'" : '' }}">
+                        <div class="relative h-48">
+                            <div class="absolute inset-0 bg-gradient-to-br {{ $isCompleted ? 'from-green-400 to-emerald-500' : ($isCurrent ? 'from-blue-400 to-purple-500' : 'from-gray-400 to-gray-500') }}">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    @if($isCompleted)
+                                        <svg class="w-20 h-20 text-white/30" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                    @elseif($isCurrent)
+                                        <svg class="w-20 h-20 text-white/30" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
+                                        </svg>
+                                    @else
+                                        <svg class="w-20 h-20 text-white/30" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                    @endif
+                                </div>
+                            </div>
+                            @if($isCompleted)
+                                <span class="absolute top-3 right-3 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-bold">✓ Selesai</span>
+                            @elseif($isCurrent)
+                                <span class="absolute top-3 right-3 bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-bold animate-pulse">● Aktif</span>
+                            @else
+                                <span class="absolute top-3 right-3 bg-gray-500 text-white text-xs px-3 py-1 rounded-full font-bold">🔒</span>
+                            @endif
+                        </div>
+                        <div class="p-4">
+                            <div class="text-xs text-gray-500 mb-1">Materi {{ $lesson->order }}</div>
+                            <h4 class="font-bold text-base mb-2 line-clamp-2">{{ $lesson->title }}</h4>
+                            <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ $lesson->description }}</p>
+                            @if(!$isLocked)
+                                <div class="bg-{{ $isCompleted ? 'green' : 'blue' }}-500 text-white text-center px-4 py-2 rounded-lg font-semibold text-sm hover:bg-{{ $isCompleted ? 'green' : 'blue' }}-600 transition-colors">
+                                    {{ $isCurrent ? 'Lanjutkan' : ($isCompleted ? 'Ulangi' : 'Mulai') }}
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</x-app-layout>
