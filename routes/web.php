@@ -14,28 +14,15 @@ Route::get('/', function () {
     return view('welcome', compact('classes'));
 });
 
-// Route untuk update harga di production (sekali jalan, lalu hapus)
-Route::get('/update-prices-production', function () {
-    DB::table('tahsin_classes')
-        ->where('name', 'Tahsin Anak Reguler')
-        ->update(['price' => 150000]);
-
-    DB::table('tahsin_classes')
-        ->where('name', 'Tahsin Anak Privat')
-        ->update(['price' => 350000]);
-
-    DB::table('tahsin_classes')
-        ->where('name', 'Tahsin Reguler (Dewasa)')
-        ->update(['price' => 120000]);
-
-    DB::table('tahsin_classes')
-        ->where('name', 'Tahsin Privat (Dewasa)')
-        ->update(['price' => 300000]);
-
+// DEBUG: Cek kondisi database production
+Route::get('/debug-database', function () {
+    $classes = DB::table('tahsin_classes')->orderBy('order')->get();
+    
     return response()->json([
-        'success' => true,
-        'message' => 'Harga berhasil diupdate!',
-        'prices' => DB::table('tahsin_classes')->orderBy('order')->get(['name', 'price'])
+        'total_records' => $classes->count(),
+        'data' => $classes,
+        'migrations_run' => DB::table('migrations')->count(),
+        'last_migration' => DB::table('migrations')->latest('id')->first()
     ]);
 });
 
