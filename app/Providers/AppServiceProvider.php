@@ -22,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
         // Force HTTPS in production (Railway deployment)
         if (config('app.env') === 'production') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
+            
+            // Trust Railway proxy
+            request()->server->set('HTTPS', 'on');
         }
     }
 }
