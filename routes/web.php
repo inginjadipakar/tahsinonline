@@ -14,10 +14,29 @@ Route::get('/', function () {
     return view('welcome', compact('classes'));
 });
 
-// Debug route to check prices
-Route::get('/debug-prices', function () {
-    $classes = \App\Models\TahsinClass::where('is_active', true)->orderBy('order')->get();
-    return response()->json($classes);
+// Route untuk update harga di production (sekali jalan, lalu hapus)
+Route::get('/update-prices-production', function () {
+    DB::table('tahsin_classes')
+        ->where('name', 'Tahsin Anak Reguler')
+        ->update(['price' => 150000]);
+
+    DB::table('tahsin_classes')
+        ->where('name', 'Tahsin Anak Privat')
+        ->update(['price' => 350000]);
+
+    DB::table('tahsin_classes')
+        ->where('name', 'Tahsin Reguler (Dewasa)')
+        ->update(['price' => 120000]);
+
+    DB::table('tahsin_classes')
+        ->where('name', 'Tahsin Privat (Dewasa)')
+        ->update(['price' => 300000]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Harga berhasil diupdate!',
+        'prices' => DB::table('tahsin_classes')->orderBy('order')->get(['name', 'price'])
+    ]);
 });
 
 use App\Http\Controllers\DashboardController;
