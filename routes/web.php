@@ -14,6 +14,12 @@ Route::get('/', function () {
     return view('welcome', compact('classes'));
 });
 
+// Debug route to check prices
+Route::get('/debug-prices', function () {
+    $classes = \App\Models\TahsinClass::where('is_active', true)->orderBy('order')->get();
+    return response()->json($classes);
+});
+
 use App\Http\Controllers\DashboardController;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
