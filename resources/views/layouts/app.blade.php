@@ -76,7 +76,8 @@
             <div class="hidden md:flex w-64 flex-col bg-white h-full border-r border-gray-100">
                 {{-- Logo --}}
                 <div class="p-8 flex items-center gap-3">
-                    <span class="text-2xl font-bold text-gray-900 tracking-tight">Tahsin<span class="text-islamic-emerald">ku</span></span>
+                    <img src="{{ asset('images/logo.png') }}" alt="Tahsinku Logo" class="h-9 w-auto">
+                    <span class="text-2xl font-bold text-gray-900 tracking-tight leading-none mt-1">Tahsin<span class="text-islamic-emerald">ku</span></span>
                 </div>
                 
                 {{-- Menu --}}

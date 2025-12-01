@@ -1,181 +1,181 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div>
-            <h2 class="font-bold text-2xl text-gray-900 leading-tight">
-                📚 {{ __('Kelas Saya') }}
-            </h2>
-            <p class="text-sm text-gray-600 mt-1">{{ $enrolledClass->name }}</p>
-        </div>
-    </x-slot>
-
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             
-            {{-- Class Header Card --}}
-            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg p-8 mb-8 text-white">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="bg-white/20 rounded-full p-3">
-                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
-                                </svg>
+            <!-- Header Section -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-100 dark:border-gray-700">
+                <div class="p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-islamic-emerald/10 text-islamic-emerald dark:bg-islamic-emerald/20 dark:text-islamic-emerald-light">
+                                    Kelas Aktif
+                                </span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">
+                                    Berakhir: {{ $subscription->end_date->format('d M Y') }}
+                                </span>
                             </div>
-                            <div>
-                                <h3 class="text-2xl font-bold">{{ $enrolledClass->name }}</h3>
-                                <p class="text-blue-100 text-sm">{{ $enrolledClass->description }}</p>
-                            </div>
+                            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                                {{ $enrolledClass->name }}
+                            </h1>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                {{ $enrolledClass->description }}
+                            </p>
                         </div>
                         
-                        {{-- Progress Bar --}}
-                        <div class="bg-white/10 rounded-full h-3 overflow-hidden mb-2">
-                            <div class="bg-white h-full rounded-full transition-all" style="width: {{ $progress }}%"></div>
+                        <!-- Progress Card -->
+                        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-5 min-w-[280px] border border-gray-100 dark:border-gray-600">
+                            <div class="flex justify-between items-end mb-2">
+                                <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Progress Belajar</span>
+                                <span class="text-2xl font-bold text-islamic-emerald">{{ $progress }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5 mb-2">
+                                <div class="bg-islamic-emerald h-2.5 rounded-full transition-all duration-500" style="width: {{ $progress }}%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 flex justify-between">
+                                <span>{{ $completedCount }} Selesai</span>
+                                <span>{{ $totalLessons }} Total Materi</span>
+                            </div>
                         </div>
-                        <p class="text-sm text-blue-100">{{ $progress }}% Selesai ({{ $completedCount }}/{{ $totalLessons }} Materi)</p>
-                    </div>
-                    
-                    <div class="flex flex-col gap-3">
-                        @if($classActive)
-                            <span class="inline-flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg font-semibold">
-                                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                                Kelas Aktif
-                            </span>
-                        @else
-                            <span class="inline-flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded-lg font-semibold">
-                                ⏸️ Kelas Belum Dibuka
-                            </span>
-                        @endif
                     </div>
                 </div>
             </div>
 
-            {{-- Class Schedules --}}
-            @if($activeSchedules->count() > 0)
-                <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
-                    <h4 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-                        </svg>
-                        Jadwal Pertemuan
-                    </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @foreach($activeSchedules as $schedule)
-                            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 border-2 border-blue-100">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span class="font-bold text-gray-900">{{ $schedule->day_indonesian }}</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-sm text-gray-700">
-                                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <span>{{ date('H:i', strtotime($schedule->time_start)) }} - {{ date('H:i', strtotime($schedule->time_end)) }} WIB</span>
-                                </div>
-                            </div>
-                        @endforeach
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Main Content: Lessons List -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <span class="text-2xl">📚</span> Daftar Materi
+                        </h2>
                     </div>
-                </div>
-            @endif
 
-            {{-- Lessons Section --}}
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
-                    </svg>
-                    Materi Pembelajaran
-                </h4>
-
-                <div class="space-y-4">
-                    @foreach($lessons as $lessonData)
-                        @php
-                            $lesson = $lessonData['lesson'];
-                            $status = $lessonData['status'];
-                            $isCompleted = $lessonData['isCompleted'];
-                            $isCurrent = $lessonData['isCurrent'];
-                            $isLocked = $lessonData['isLocked'];
-                        @endphp
-
-                        <div class="bg-gradient-to-r {{ $isCompleted ? 'from-green-50 to-emerald-50 border-green-200' : ($isCurrent ? 'from-blue-50 to-indigo-50 border-blue-200' : 'from-gray-50 to-slate-50 border-gray-200') }} border-2 rounded-xl p-5 transition-all hover:shadow-md {{ !$isLocked ? 'cursor-pointer' : 'opacity-60' }}" 
-                             onclick="{{ !$isLocked ? "window.location='" . route('student.lessons.show', $lesson) . "'" : '' }}">
-                            
-                            <div class="flex items-start gap-4">
-                                {{-- Status Icon --}}
-                                <div class="flex-shrink-0">
-                                    @if($isCompleted)
-                                        <div class="bg-green-500 rounded-full p-3">
-                                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                            </svg>
-                                        </div>
-                                    @elseif($isCurrent)
-                                        <div class="bg-blue-500 rounded-full p-3">
-                                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
-                                            </svg>
-                                        </div>
-                                    @else
-                                        <div class="bg-gray-300 rounded-full p-3">
-                                            <svg class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-                                            </svg>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                {{-- Lesson Info --}}
-                                <div class="flex-1">
-                                    <div class="flex items-start justify-between gap-4 mb-2">
-                                        <div>
-                                            <span class="text-xs font-semibold {{ $isCompleted ? 'text-green-700' : ($isCurrent ? 'text-blue-700' : 'text-gray-500') }} uppercase">
-                                                Materi {{ $lesson->order }}
-                                            </span>
-                                            <h5 class="text-lg font-bold {{ $isCompleted ? 'text-green-900' : ($isCurrent ? 'text-blue-900' : 'text-gray-700') }}">
-                                                {{ $lesson->title }}
-                                            </h5>
-                                        </div>
-                                        
-                                        @if($isCompleted)
-                                            <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">✓ Selesai</span>
-                                        @elseif($isCurrent)
-                                            <span class="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap animate-pulse">● Sedang Aktif</span>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                        @forelse($lessons as $item)
+                            <div class="group border-b last:border-0 border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                <div class="p-5 flex items-center gap-4">
+                                    <!-- Status Icon -->
+                                    <div class="flex-shrink-0">
+                                        @if($item['status'] === 'completed')
+                                            <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                            </div>
+                                        @elseif($item['status'] === 'current')
+                                            <div class="w-10 h-10 rounded-full bg-islamic-gold/20 flex items-center justify-center text-islamic-gold animate-pulse">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            </div>
                                         @else
-                                            <span class="bg-gray-400 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">🔒 Terkunci</span>
+                                            <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                            </div>
                                         @endif
                                     </div>
-                                    
-                                    <p class="text-sm {{ $isLocked ? 'text-gray-500' : 'text-gray-700' }} mb-3">
-                                        {{ Str::limit($lesson->description, 100) }}
-                                    </p>
 
-                                    @if(!$isLocked)
-                                        <div class="flex items-center gap-2">
-                                            <a href="{{ route('student.lessons.show', $lesson) }}" class="inline-flex items-center gap-2 bg-gradient-to-r {{ $isCompleted ? 'from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700' : 'from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700' }} text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all">
-                                                @if($isCompleted)
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                                    </svg>
-                                                    Ulangi Materi
-                                                @else
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                    </svg>
-                                                    {{ $isCurrent ? 'Lanjutkan' : 'Mulai Belajar' }}
-                                                @endif
-                                            </a>
+                                    <!-- Content -->
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                Pertemuan {{ $loop->iteration }}
+                                            </span>
+                                            @if($item['status'] === 'current')
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-islamic-gold text-white">SEKARANG</span>
+                                            @endif
                                         </div>
-                                    @else
-                                        <p class="text-sm text-gray-500 italic">
-                                            🔒 Selesaikan materi sebelumnya untuk membuka
+                                        <h3 class="text-base font-semibold text-gray-900 dark:text-white truncate group-hover:text-islamic-emerald transition-colors">
+                                            {{ $item['lesson']->title }}
+                                        </h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
+                                            {{ $item['lesson']->description }}
                                         </p>
-                                    @endif
+                                    </div>
+
+                                    <!-- Action -->
+                                    <div>
+                                        @if($item['status'] !== 'locked')
+                                            <a href="{{ route('student.lessons.show', $item['lesson']) }}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                            </a>
+                                        @else
+                                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-transparent text-gray-300 dark:text-gray-600 cursor-not-allowed">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
+                        @empty
+                            <div class="p-12 text-center">
+                                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                                    📭
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Belum Ada Materi</h3>
+                                <p class="text-gray-500 dark:text-gray-400">Materi pembelajaran akan segera ditambahkan oleh admin.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Sidebar: Schedule & Info -->
+                <div class="space-y-6">
+                    <!-- Schedule Card -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                            <span>📅</span> Jadwal Kelas
+                        </h3>
+                        
+                        @if($activeSchedules->count() > 0)
+                            <div class="space-y-4">
+                                @foreach($activeSchedules as $schedule)
+                                    <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700">
+                                        <div class="w-10 h-10 rounded-lg bg-white dark:bg-gray-800 flex flex-col items-center justify-center shadow-sm border border-gray-100 dark:border-gray-600">
+                                            <span class="text-[10px] font-bold text-gray-400 uppercase">{{ substr($schedule->day_of_week, 0, 3) }}</span>
+                                            <span class="text-sm font-bold text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($schedule->start_time)->format('d') }}</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white">{{ ucfirst($schedule->day_of_week) }}</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }} WIB
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            
+                            <div class="mt-6">
+                                <a href="#" class="block w-full py-3 px-4 bg-islamic-navy hover:bg-islamic-navy-light text-white text-center font-medium rounded-xl transition-colors shadow-lg shadow-islamic-navy/20">
+                                    Gabung Zoom Meeting
+                                </a>
+                                <p class="text-xs text-center text-gray-400 mt-2">Link akan aktif 15 menit sebelum kelas dimulai.</p>
+                            </div>
+                        @else
+                            <div class="text-center py-6 text-gray-500 dark:text-gray-400">
+                                <p>Jadwal belum ditentukan.</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Teacher Info -->
+                    <div class="bg-gradient-to-br from-islamic-emerald to-islamic-emerald-dark rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                        
+                        <h3 class="text-lg font-bold mb-4 relative z-10">Pengajar Anda</h3>
+                        <div class="flex items-center gap-4 relative z-10">
+                            <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-2xl border-2 border-white/30">
+                                👳
+                            </div>
+                            <div>
+                                <div class="font-bold text-lg">Ustadz Ahmad</div>
+                                <div class="text-sm text-islamic-emerald-light">Bersanad Hafs 'an 'Ashim</div>
+                            </div>
                         </div>
-                    @endforeach
+                        
+                        <div class="mt-6 pt-6 border-t border-white/10 relative z-10">
+                            <a href="#" class="flex items-center justify-between text-sm font-medium hover:text-islamic-gold-light transition-colors">
+                                <span>Hubungi Pengajar</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

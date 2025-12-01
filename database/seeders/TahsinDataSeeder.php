@@ -19,6 +19,7 @@ class TahsinDataSeeder extends Seeder
             'name' => 'Tahsin Anak Reguler',
             'description' => 'Kelas tahsin untuk anak-anak dengan sistem reguler (3-6 peserta). Belajar membaca Al-Quran dengan benar sesuai kaidah tajwid dalam suasana yang menyenangkan.',
             'order' => 1,
+            'price' => 150000,
             'is_active' => true,
         ]);
 
@@ -26,6 +27,7 @@ class TahsinDataSeeder extends Seeder
             'name' => 'Tahsin Anak Privat',
             'description' => 'Kelas tahsin privat khusus untuk anak-anak dengan pendampingan personal one-on-one. Pembelajaran intensif dan fokus sesuai kemampuan anak.',
             'order' => 2,
+            'price' => 300000,
             'is_active' => true,
         ]);
 
@@ -33,6 +35,7 @@ class TahsinDataSeeder extends Seeder
             'name' => 'Tahsin Reguler (Dewasa)',
             'description' => 'Kelas tahsin untuk umum/dewasa dengan sistem reguler. Memperbaiki bacaan Al-Quran sesuai dengan kaidah tajwid yang benar.',
             'order' => 3,
+            'price' => 200000,
             'is_active' => true,
         ]);
 
@@ -40,6 +43,7 @@ class TahsinDataSeeder extends Seeder
             'name' => 'Tahsin Privat (Dewasa)',
             'description' => 'Kelas tahsin privat untuk dewasa dengan metode pembelajaran personal. Jadwal fleksibel dan materi disesuaikan dengan kebutuhan.',
             'order' => 4,
+            'price' => 400000,
             'is_active' => true,
         ]);
 

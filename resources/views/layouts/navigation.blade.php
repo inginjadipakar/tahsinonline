@@ -5,8 +5,9 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" class="text-2xl font-bold text-islamic-gold font-serif">
-                        Tahsin<span class="text-islamic-emerald">ku</span>
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
+                        <img src="{{ asset('images/logo.png') }}" alt="Tahsinku Logo" class="h-9 w-auto">
+                        <span class="text-2xl font-bold text-islamic-gold font-serif leading-none mt-1">Tahsin<span class="text-islamic-emerald">ku</span></span>
                     </a>
                 </div>
 
@@ -16,6 +17,9 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     @if(auth()->user()->role === 'student')
+                        <x-nav-link :href="route('student.my-class')" :active="request()->routeIs('student.my-class')" class="text-gray-300 hover:text-islamic-gold transition-colors duration-300">
+                            {{ __('Kelas Saya') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('student.classes.index')" :active="request()->routeIs('student.classes.*')" class="text-gray-300 hover:text-islamic-gold transition-colors duration-300">
                             {{ __('Kelas Tahsin') }}
                         </x-nav-link>
@@ -104,6 +108,17 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gray-300 hover:text-islamic-gold">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @if(auth()->user()->role === 'student')
+                <x-responsive-nav-link :href="route('student.my-class')" :active="request()->routeIs('student.my-class')" class="text-gray-300 hover:text-islamic-gold">
+                    {{ __('Kelas Saya') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('student.classes.index')" :active="request()->routeIs('student.classes.*')" class="text-gray-300 hover:text-islamic-gold">
+                    {{ __('Kelas Tahsin') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('student.subscription.index')" :active="request()->routeIs('student.subscription.*')" class="text-gray-300 hover:text-islamic-gold">
+                    {{ __('Langganan') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

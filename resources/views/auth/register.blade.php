@@ -1,10 +1,10 @@
-<x-guest-layout>
-    <div class="mb-6 text-center">
+<x-split-layout image="images/quran-study-real.png">
+    <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Daftar Tahsinku</h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Mulai perjalanan belajar Al-Qur'an Anda</p>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Mulai perjalanan belajar Al-Qur'an Anda hari ini.</p>
     </div>
 
-    <form method="POST" action="{{ route('register') }}" id="registerForm">
+    <form method="POST" action="{{ route('register') }}" id="registerForm" class="space-y-6">
         @csrf
 
         {{-- Hidden Inputs for Package & Program --}}
@@ -12,73 +12,85 @@
             <input type="hidden" name="selected_package" value="{{ request('package') }}">
             <input type="hidden" name="selected_program" value="{{ request('program') }}">
             
-            <div class="mb-6 bg-islamic-emerald/10 dark:bg-islamic-gold/10 border border-islamic-emerald/20 dark:border-islamic-gold/20 rounded-xl p-4 flex items-center gap-4">
-                <div class="w-12 h-12 bg-white dark:bg-islamic-navy rounded-full flex items-center justify-center shadow-sm text-2xl">
+            <div class="bg-gradient-to-br from-islamic-emerald/5 to-islamic-gold/5 dark:from-islamic-emerald/10 dark:to-islamic-gold/10 border border-islamic-emerald/20 dark:border-islamic-gold/20 rounded-2xl p-5 flex items-center gap-5">
+                <div class="w-14 h-14 bg-white dark:bg-islamic-navy rounded-2xl flex items-center justify-center shadow-sm text-3xl ring-1 ring-gray-100 dark:ring-gray-700">
                     {{ request('program') == 'iqra' ? '📖' : '🎯' }}
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Mendaftar untuk:</p>
-                    <h3 class="font-bold text-gray-900 dark:text-white text-lg">
-                        Paket {{ ucfirst(request('package')) }} - Program {{ ucfirst(request('program')) }}
+                    <p class="text-xs font-semibold uppercase tracking-wider text-islamic-emerald dark:text-islamic-gold mb-1">Pilihan Anda</p>
+                    <h3 class="font-bold text-gray-900 dark:text-white text-lg leading-tight">
+                        Paket {{ ucfirst(request('package')) }}
                     </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Program {{ ucfirst(request('program')) }}</p>
                 </div>
             </div>
         @endif
 
         <!-- Class Selection -->
-        <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-            <x-input-label for="tahsin_class_id" value="Pilih Kelas Tahsin" class="text-blue-800 dark:text-blue-300 font-semibold" />
-            <select id="tahsin_class_id" name="tahsin_class_id" required
-                    class="mt-2 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-red-500 dark:focus:border-red-600 focus:ring-red-500 dark:focus:ring-red-600 rounded-md shadow-sm">
-                <option value="">-- Pilih Kelas --</option>
-                @foreach($classes as $class)
-                    <option value="{{ $class->id }}" 
-                            data-is-child="{{ str_contains(strtolower($class->name), 'anak') ? '1' : '0' }}"
-                            {{ old('tahsin_class_id') == $class->id ? 'selected' : '' }}>
-                        {{ $class->name }}
-                    </option>
-                @endforeach
-            </select>
+        <div>
+            <x-input-label for="tahsin_class_id" value="Pilih Kelas Tahsin" />
+            <div class="mt-2 relative">
+                <select id="tahsin_class_id" name="tahsin_class_id" required
+                        class="block w-full pl-4 pr-10 py-3 text-base border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-islamic-emerald focus:border-islamic-emerald sm:text-sm rounded-xl transition-shadow shadow-sm">
+                    <option value="">-- Pilih Kelas yang Sesuai --</option>
+                    @foreach($classes as $class)
+                        <option value="{{ $class->id }}" 
+                                data-is-child="{{ str_contains(strtolower($class->name), 'anak') ? '1' : '0' }}"
+                                {{ old('tahsin_class_id') == $class->id ? 'selected' : '' }}>
+                            {{ $class->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
             <x-input-error :messages="$errors->get('tahsin_class_id')" class="mt-2" />
-            <p class="text-xs text-blue-600 dark:text-blue-400 mt-2">💡 Pilih kelas yang sesuai dengan usia dan kebutuhan Anda</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1">
+                <svg class="w-4 h-4 text-islamic-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Pilih kelas sesuai usia peserta
+            </p>
         </div>
 
         <!-- For Child Classes - Parent Info -->
-        <div id="child-form" style="display: none;">
-            <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-                Data Orang Tua/Wali
-            </h3>
+        <div id="child-form" style="display: none;" class="space-y-6 animate-fade-in-down">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                </div>
+                <div class="relative flex justify-start">
+                    <span class="pr-3 bg-white dark:bg-islamic-navy text-sm font-medium text-islamic-emerald dark:text-islamic-gold">
+                        Data Orang Tua/Wali
+                    </span>
+                </div>
+            </div>
             
-            <div class="space-y-4">
+            <div class="grid grid-cols-1 gap-6">
                 <div>
                     <x-input-label for="parent_name" value="Nama Orang Tua/Wali *" />
-                    <x-text-input id="parent_name" class="block mt-1 w-full" type="text" name="parent_name" 
+                    <x-text-input id="parent_name" class="block mt-2 w-full py-3 rounded-xl" type="text" name="parent_name" 
                                   :value="old('parent_name')" placeholder="Nama lengkap orang tua" />
                     <x-input-error :messages="$errors->get('parent_name')" class="mt-2" />
                 </div>
 
                 <div>
                     <x-input-label for="phone_child" value="No HP Orang Tua (untuk login) *" />
-                    <x-text-input id="phone_child" class="block mt-1 w-full" type="text" name="phone" 
+                    <x-text-input id="phone_child" class="block mt-2 w-full py-3 rounded-xl" type="text" name="phone" 
                                   :value="old('phone')" placeholder="08123456789" />
                     <x-input-error :messages="$errors->get('phone')" class="mt-2" />
-                    <p class="text-xs text-gray-500 mt-1">📱 Nomor ini akan digunakan untuk login</p>
                 </div>
 
                 <div>
                     <x-input-label for="child_name" value="Nama Anak (Peserta) *" />
-                    <x-text-input id="child_name" class="block mt-1 w-full" type="text" name="child_name" 
-                                  :value="old('child_name')" placeholder="Nama anak" />
+                    <x-text-input id="child_name" class="block mt-2 w-full py-3 rounded-xl" type="text" name="child_name" 
+                                  :value="old('child_name')" placeholder="Nama lengkap anak" />
                     <x-input-error :messages="$errors->get('child_name')" class="mt-2" />
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <x-input-label for="child_age" value="Usia Anak *" />
-                        <x-text-input id="child_age" class="block mt-1 w-full" type="number" name="age" 
+                        <x-text-input id="child_age" class="block mt-2 w-full py-3 rounded-xl" type="number" name="age" 
                                       :value="old('age')" min="3" max="17" placeholder="7" />
                         <x-input-error :messages="$errors->get('age')" class="mt-2" />
                     </div>
@@ -86,7 +98,7 @@
                     <div>
                         <x-input-label for="child_gender" value="Jenis Kelamin *" />
                         <select id="child_gender" name="gender"
-                                class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm">
+                                class="block mt-2 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-islamic-emerald focus:ring-islamic-emerald rounded-xl shadow-sm py-3">
                             <option value="">-- Pilih --</option>
                             <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Laki-laki</option>
                             <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Perempuan</option>
@@ -97,50 +109,53 @@
 
                 <div>
                     <x-input-label for="occupation_child" value="Pekerjaan Orang Tua *" />
-                    <x-text-input id="occupation_child" class="block mt-1 w-full" type="text" name="occupation" 
+                    <x-text-input id="occupation_child" class="block mt-2 w-full py-3 rounded-xl" type="text" name="occupation" 
                                   :value="old('occupation')" placeholder="Wiraswasta, PNS, dll" />
                     <x-input-error :messages="$errors->get('occupation')" class="mt-2" />
                 </div>
 
                 <div>
                     <x-input-label for="address_child" value="Alamat Domisili *" />
-                    <textarea id="address_child" name="address" rows="2"
+                    <textarea id="address_child" name="address" rows="3"
                               placeholder="Jl. Contoh No. 123, Kota"
-                              class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm">{{ old('address') }}</textarea>
+                              class="block mt-2 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-islamic-emerald focus:ring-islamic-emerald rounded-xl shadow-sm">{{ old('address') }}</textarea>
                     <x-input-error :messages="$errors->get('address')" class="mt-2" />
                 </div>
             </div>
         </div>
 
         <!-- For Adult Classes - Personal Info -->
-        <div id="adult-form" style="display: none;">
-            <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-                Data Pribadi
-            </h3>
+        <div id="adult-form" style="display: none;" class="space-y-6 animate-fade-in-down">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                </div>
+                <div class="relative flex justify-start">
+                    <span class="pr-3 bg-white dark:bg-islamic-navy text-sm font-medium text-islamic-emerald dark:text-islamic-gold">
+                        Data Pribadi
+                    </span>
+                </div>
+            </div>
             
-            <div class="space-y-4">
+            <div class="grid grid-cols-1 gap-6">
                 <div>
                     <x-input-label for="name" value="Nama Lengkap *" />
-                    <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" 
+                    <x-text-input id="name" class="block mt-2 w-full py-3 rounded-xl" type="text" name="name" 
                                   :value="old('name')" placeholder="Nama lengkap Anda" />
                     <x-input-error :messages="$errors->get('name')" class="mt-2" />
                 </div>
 
                 <div>
                     <x-input-label for="phone_adult" value="No HP (untuk login) *" />
-                    <x-text-input id="phone_adult" class="block mt-1 w-full" type="text" name="phone" 
+                    <x-text-input id="phone_adult" class="block mt-2 w-full py-3 rounded-xl" type="text" name="phone" 
                                   :value="old('phone')" placeholder="08123456789" />
                     <x-input-error :messages="$errors->get('phone')" class="mt-2" />
-                    <p class="text-xs text-gray-500 mt-1">📱 Nomor ini akan digunakan untuk login</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <x-input-label for="age_adult" value="Usia *" />
-                        <x-text-input id="age_adult" class="block mt-1 w-full" type="number" name="age" 
+                        <x-text-input id="age_adult" class="block mt-2 w-full py-3 rounded-xl" type="number" name="age" 
                                       :value="old('age')" min="18" max="100" placeholder="25" />
                         <x-input-error :messages="$errors->get('age')" class="mt-2" />
                     </div>
@@ -148,7 +163,7 @@
                     <div>
                         <x-input-label for="gender_adult" value="Jenis Kelamin *" />
                         <select id="gender_adult" name="gender"
-                                class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm">
+                                class="block mt-2 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-islamic-emerald focus:ring-islamic-emerald rounded-xl shadow-sm py-3">
                             <option value="">-- Pilih --</option>
                             <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Laki-laki</option>
                             <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Perempuan</option>
@@ -159,58 +174,62 @@
 
                 <div>
                     <x-input-label for="occupation_adult" value="Pekerjaan *" />
-                    <x-text-input id="occupation_adult" class="block mt-1 w-full" type="text" name="occupation" 
+                    <x-text-input id="occupation_adult" class="block mt-2 w-full py-3 rounded-xl" type="text" name="occupation" 
                                   :value="old('occupation')" placeholder="Pekerjaan Anda" />
                     <x-input-error :messages="$errors->get('occupation')" class="mt-2" />
                 </div>
 
                 <div>
                     <x-input-label for="address_adult" value="Alamat Domisili *" />
-                    <textarea id="address_adult" name="address" rows="2"
+                    <textarea id="address_adult" name="address" rows="3"
                               placeholder="Jl. Contoh No. 123, Kota"
-                              class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm">{{ old('address') }}</textarea>
+                              class="block mt-2 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-islamic-emerald focus:ring-islamic-emerald rounded-xl shadow-sm">{{ old('address') }}</textarea>
                     <x-input-error :messages="$errors->get('address')" class="mt-2" />
                 </div>
             </div>
         </div>
 
         <!-- Password Fields -->
-        <div id="password-section" style="display: none;">
-            <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 mt-6 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                </svg>
-                Keamanan Akun
-            </h3>
+        <div id="password-section" style="display: none;" class="space-y-6 animate-fade-in-down">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                </div>
+                <div class="relative flex justify-start">
+                    <span class="pr-3 bg-white dark:bg-islamic-navy text-sm font-medium text-islamic-emerald dark:text-islamic-gold">
+                        Keamanan Akun
+                    </span>
+                </div>
+            </div>
             
-            <div class="space-y-4">
+            <div class="grid grid-cols-1 gap-6">
                 <div>
                     <x-input-label for="password" value="Password *" />
-                    <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" 
+                    <x-text-input id="password" class="block mt-2 w-full py-3 rounded-xl" type="password" name="password" 
                                   placeholder="Minimal 8 karakter" />
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
 
                 <div>
                     <x-input-label for="password_confirmation" value="Konfirmasi Password *" />
-                    <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" 
+                    <x-text-input id="password_confirmation" class="block mt-2 w-full py-3 rounded-xl" type="password" 
                                   name="password_confirmation" placeholder="Ketik ulang password" />
                     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                 </div>
             </div>
         </div>
 
-        <div class="flex items-center justify-between mt-6">
-            <a class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" 
+        <div class="pt-4 border-t border-gray-100 dark:border-gray-800 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+            <a class="text-sm text-gray-600 dark:text-gray-400 hover:text-islamic-emerald dark:hover:text-islamic-gold transition-colors" 
                href="{{ route('login') }}">
-                Sudah punya akun?
+                Sudah punya akun? <span class="font-semibold underline">Masuk</span>
             </a>
 
-            <x-primary-button id="submitBtn" style="display: none;">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+            <x-primary-button id="submitBtn" style="display: none;" class="w-full sm:w-auto justify-center py-3 px-8 text-base rounded-xl shadow-lg shadow-islamic-emerald/20 hover:shadow-islamic-emerald/30 transition-all transform hover:-translate-y-0.5">
                 Daftar Sekarang
+                <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
             </x-primary-button>
         </div>
     </form>
@@ -228,7 +247,7 @@
                 const isChild = selectedOption.getAttribute('data-is-child') === '1';
                 const hasSelection = classSelect.value !== '';
 
-                // Show/hide forms
+                // Show/hide forms with animation
                 childForm.style.display = (hasSelection && isChild) ? 'block' : 'none';
                 adultForm.style.display = (hasSelection && !isChild) ? 'block' : 'none';
                 passwordSection.style.display = hasSelection ? 'block' : 'none';
@@ -264,4 +283,4 @@
             toggleForms();
         });
     </script>
-</x-guest-layout>
+</x-split-layout>
