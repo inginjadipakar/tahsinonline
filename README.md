@@ -1,246 +1,147 @@
-# 📖 Tahsinku - Platform Belajar Al-Qur'an
+# 🎓 TahsinOnline - Platform Pembelajaran Tahsin Al-Qur'an
 
-Platform belajar mengaji online yang menghubungkan santri dengan ustadz/ustadzah bersertifikat untuk pembelajaran Al-Qur'an dari tingkat Iqra hingga Tahsin lanjutan.
+Platform pembelajaran Tahsin Al-Qur'an berbasis web yang dibangun dengan Laravel 12.
 
-## 🚀 Tech Stack
+## 🚀 Quick Start (Deployment Gratis)
 
-- **Backend:** Laravel 12.39.0
-- **Frontend:** Alpine.js + Tailwind CSS
-- **Build Tool:** Vite
-- **Database:** MySQL 8.0
-- **PHP:** 8.3.26
+### Deploy ke Railway.app (Recommended - Gratis $5/bulan)
 
-## ✨ Features
+1. **Fork/Clone repository ini**
+2. **Push ke GitHub** (pastikan repository public atau private dengan Railway access)
+3. **Deploy ke Railway**:
+   - Kunjungi [railway.app](https://railway.app)
+   - Login dengan GitHub
+   - New Project → Deploy from GitHub
+   - Pilih repository `tahsionline`
+   - Tambahkan MySQL database dari Railway dashboard
+   - Configure environment variables (lihat `DEPLOYMENT.md`)
 
-### Landing Page
-- 🎨 Modern hero section dengan carousel
-- 💡 FAQ accordion dengan smooth animations
-- 📱 Fully responsive design
-- 🌙 Dark mode support
-- 🔍 SEO optimized
+📖 **[Panduan Deployment Lengkap](./DEPLOYMENT.md)**
 
-### Student Dashboard
-- 📚 Kelas Saya (My Classes) dengan progress tracking
-- 📅 Jadwal kelas interaktif
-- 💰 Payment & subscription management
-- 👤 Profile management
-- 📊 Learning progress visualization
+## 📋 Requirements
 
-### Admin Panel
-- 👥 User management (Students & Teachers)
-- 🏫 Class & schedule management
-- 📝 Lesson content management
-- 💳 Subscription & payment tracking
-
-### 🚧 Coming Soon
-- 👨‍🏫 **Teacher Dashboard** (In Development)
-  - Student progress tracking
-  - Schedule management
-  - Lesson completion updates
-  - Attendance marking
-
-## 📦 Installation
-
-### Prerequisites
-- PHP >= 8.3
+- PHP 8.2 atau lebih tinggi
 - Composer
-- Node.js >= 18
-- MySQL >= 8.0
+- Node.js & NPM
+- MySQL 8.0+
 
-### Setup Steps
+## 🛠️ Local Development Setup
 
-1. **Clone repository**
 ```bash
-git clone https://github.com/inginjadipakar/Tahsinku.git
-cd Tahsinku
-```
+# Clone repository
+git clone <YOUR_REPO_URL>
+cd tahsionline
 
-2. **Install dependencies**
-```bash
+# Install dependencies
 composer install
 npm install
-```
 
-3. **Environment configuration**
-```bash
+# Setup environment
 cp .env.example .env
 php artisan key:generate
-```
 
-4. **Database setup**
-Update `.env` with your database credentials:
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=tahsinku
-DB_USERNAME=root
-DB_PASSWORD=your_password
-```
+# Configure database di .env
+# DB_DATABASE=tahsinku
+# DB_USERNAME=root
+# DB_PASSWORD=
 
-Then run migrations:
-```bash
-php artisan migrate --seed
-```
+# Run migrations & seeders
+php artisan migrate
+php artisan db:seed
 
-5. **Build assets**
-```bash
-npm run dev
-```
+# Build assets
+npm run build
 
-6. **Start development server**
-```bash
+# Start development server
 php artisan serve
 ```
 
-Visit: `http://localhost:8000`
+Aplikasi akan berjalan di `http://localhost:8000`
 
-## 👥 Default Credentials
+## ✨ Features
 
-After running seeders:
-- **Admin:** admin@tahsinku.com / password
-- **Student:** Register via landing page
+- 🔐 Autentikasi (Login/Register)
+- 📚 Manajemen Program Tahsin
+- 👥 Manajemen Kelas & Jadwal
+- 💰 Sistem Pembayaran & Subscription
+- 📊 Progress Tracking untuk Student
+- 📖 Lesson Management
+- 💳 Infak/Donasi
+- 👨‍💼 Admin Dashboard
+- 👨‍🎓 Student Portal
 
-## 📂 Project Structure
+## 🏗️ Tech Stack
+
+- **Framework**: Laravel 12
+- **Frontend**: Laravel Breeze (Blade Templates)
+- **Database**: MySQL
+- **Build Tool**: Vite
+- **Testing**: Pest PHP
+- **Styling**: Tailwind CSS
+
+## 📁 Struktur Project
 
 ```
 tahsionline/
 ├── app/
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   │   ├── Admin/          # Admin controllers
-│   │   │   ├── Student/        # Student controllers
-│   │   │   └── Teacher/        # Teacher controllers (WIP)
-│   │   └── Middleware/
-│   │       └── AdminOnly.php
-│   └── Models/
-├── config/
-│   └── landing.php             # Landing page content
+│   ├── Http/Controllers/
+│   │   ├── Admin/         # Admin controllers
+│   │   ├── Student/       # Student controllers
+│   │   └── Auth/          # Authentication
+│   └── Models/            # Eloquent models
 ├── database/
-│   └── migrations/
+│   ├── migrations/        # Database migrations
+│   └── seeders/          # Database seeders
 ├── resources/
-│   ├── views/
-│   │   ├── admin/
-│   │   ├── student/
-│   │   ├── components/
-│   │   │   └── landing/        # Modular landing components
-│   │   └── layouts/
-│   └── css/
-│       └── app.css
+│   └── views/
+│       ├── admin/         # Admin views
+│       ├── student/       # Student views
+│       └── components/    # Reusable components
 └── routes/
-    └── web.php
+    └── web.php           # Web routes
 ```
 
-## 🎨 Customization
+## 🔑 Default Users (After Seeding)
 
-### Landing Page Content
-Edit `config/landing.php` to update:
-- Hero section text & images
-- FAQ questions
-- Testimonials
-- CTA buttons
-- Feature descriptions
+### Admin
+- Email: `admin@tahsin.com`
+- Password: `password`
 
-### Brand Colors
-Configure in `tailwind.config.js`:
-```js
-colors: {
-  'islamic-emerald': '#10B981',
-  'islamic-gold': '#D4AF37',
-  'islamic-navy': '#0F172A'
-}
-```
+### Student
+- Email: `student@tahsin.com`
+- Password: `password`
 
-## 🔧 Development
+## 🌐 Deployment Options
 
-### Running Development Servers
+### ✅ Railway.app (Recommended)
+- Free tier: $5 kredit/bulan
+- Auto-deploy dari GitHub
+- Built-in MySQL database
+- [Panduan Lengkap](./DEPLOYMENT.md)
+
+### Alternative Platforms
+- **Fly.io**: Free tier dengan Docker
+- **Render.com**: Free tier dengan batasan
+- **Vercel + PlanetScale**: Frontend di Vercel, DB di PlanetScale
+
+## 🧪 Testing
+
 ```bash
-# Terminal 1 - Laravel
-php artisan serve
+# Run tests
+php artisan test
 
-# Terminal 2 - Vite
-npm run dev
+# Run with coverage
+php artisan test --coverage
 ```
 
-### Clear Cache
-```bash
-php artisan optimize:clear
-```
+## 📝 License
 
-### Build for Production
-```bash
-npm run build
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
+This project is open-source.
 
 ## 🤝 Contributing
 
-We welcome contributions! Please follow these guidelines:
-
-1. **Branch naming:**
-   - `feature/` for new features
-   - `bugfix/` for bug fixes
-   - `hotfix/` for urgent fixes
-
-2. **Commit messages:**
-   - `feat:` for new features
-   - `fix:` for bug fixes
-   - `docs:` for documentation
-   - `style:` for formatting
-   - `refactor:` for code refactoring
-
-3. **Pull Requests:**
-   - Create PR to `develop` branch
-   - Add clear description
-   - Link related issues
-
-## 📝 Database Schema
-
-### Key Tables
-- `users` - All users (admin, student, teacher)
-- `tahsin_classes` - Class definitions with prices
-- `subscriptions` - User class enrollments
-- `lessons` - Lesson content
-- `user_progress` - Student learning progress
-- `class_schedules` - Class meeting schedules
-- `payments` - Payment transactions
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-**Migration errors:**
-```bash
-php artisan migrate:fresh --seed
-```
-
-**Assets not loading:**
-```bash
-npm run build
-php artisan storage:link
-```
-
-**Permission errors:**
-```bash
-chmod -R 775 storage bootstrap/cache
-```
-
-## 📞 Contact & Support
-
-- **Alamat:** Pelem II, Pelem, Kec. Ngawi, Kabupaten Ngawi, Jawa Timur
-- **Instagram:** [@masjidjamisosrohadisewoyo](https://www.instagram.com/masjidjamisosrohadisewoyo)
-
-## 📄 License
-
-This project is proprietary software. All rights reserved.
-
-## 🙏 Acknowledgments
-
-- Masjid Jami Sosrohadisewoyo - Ngawi
-- All contributors and testers
+Contributions, issues, and feature requests are welcome!
 
 ---
 
-Made with ❤️ for the Muslim community
+**Dibuat dengan ❤️ untuk pembelajaran Tahsin Al-Qur'an**
