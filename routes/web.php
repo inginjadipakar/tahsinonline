@@ -14,15 +14,63 @@ Route::get('/', function () {
     return view('welcome', compact('classes'));
 });
 
-// DEBUG: Cek kondisi database production
-Route::get('/debug-database', function () {
-    $classes = DB::table('tahsin_classes')->orderBy('order')->get();
+// Seed tahsin classes ke production database
+Route::get('/seed-tahsin-classes', function () {
+    // Cek apakah sudah ada data
+    $existing = DB::table('tahsin_classes')->count();
+    
+    if ($existing > 0) {
+        return response()->json([
+            'status' => 'already_seeded',
+            'message' => 'Data sudah ada di database',
+            'total' => $existing
+        ]);
+    }
+    
+    // Insert data dengan harga baru
+    DB::table('tahsin_classes')->insert([
+        [
+            'name' => 'Tahsin Anak Reguler',
+            'description' => 'Kelas tahsin untuk anak-anak dengan sistem reguler (3-6 peserta). Belajar membaca Al-Quran dengan benar sesuai kaidah tajwid dalam suasana yang menyenangkan.',
+            'price' => 150000,
+            'order' => 1,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'name' => 'Tahsin Anak Privat',
+            'description' => 'Kelas tahsin privat khusus untuk anak-anak dengan pendampingan personal one-on-one. Pembelajaran intensif dan fokus sesuai kemampuan anak.',
+            'price' => 350000,
+            'order' => 2,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'name' => 'Tahsin Reguler (Dewasa)',
+            'description' => 'Kelas tahsin untuk umum/dewasa dengan sistem reguler. Memperbaiki bacaan Al-Quran sesuai dengan kaidah tajwid yang benar.',
+            'price' => 120000,
+            'order' => 3,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'name' => 'Tahsin Privat (Dewasa)',
+            'description' => 'Kelas tahsin privat untuk dewasa dengan metode pembelajaran personal. Jadwal fleksibel dan materi disesuaikan dengan kebutuhan.',
+            'price' => 300000,
+            'order' => 4,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+    ]);
     
     return response()->json([
-        'total_records' => $classes->count(),
-        'data' => $classes,
-        'migrations_run' => DB::table('migrations')->count(),
-        'last_migration' => DB::table('migrations')->latest('id')->first()
+        'status' => 'success',
+        'message' => '4 paket tahsin berhasil ditambahkan!',
+        'data' => DB::table('tahsin_classes')->orderBy('order')->get()
     ]);
 });
 
