@@ -15,8 +15,8 @@ return [
                 'image' => 'images/quran-study-real.png',
                 'title' => 'Bimbingan Ustadz Bersanad',
                 'subtitle' => 'Pastikan bacaan Anda sesuai kaidah tajwid yang benar.',
-                'cta_text' => 'Lihat Profil Pengajar',
-                'cta_link' => '#about',
+                'cta_text' => 'Tanya Kualifikasi Pengajar',
+                'cta_link' => 'https://wa.me/6282230466573?text=Assalamualaikum,%20saya%20ingin%20bertanya%20tentang%20kualifikasi%20pengajar%20di%20TahsinOnline',
             ],
             [
                 'image' => 'images/quran-study-family.png',
