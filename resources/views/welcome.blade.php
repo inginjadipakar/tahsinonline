@@ -147,14 +147,22 @@
                                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed min-h-[40px]">{{ $class->description }}</p>
                                 
                                 <ul role="list" class="space-y-4 mb-8">
+                                    @php
+                                        $curriculums = [
+                                            'Tahsin Anak Reguler' => ['Pengenalan Huruf Hijaiyah', 'Makharijul Huruf Dasar', 'Hafalan Surat Pendek', 'Adab & Doa Harian'],
+                                            'Tahsin Anak Privat' => ['Pengenalan Huruf Hijaiyah', 'Makharijul Huruf Dasar', 'Hafalan Surat Pendek', 'Fokus One-on-One'],
+                                            'Tahsin Reguler (Dewasa)' => ['Makharijul Huruf', 'Sifat Huruf', 'Hukum Nun Mati & Tanwin', 'Gharib & Musykilat'],
+                                            'Tahsin Privat (Dewasa)' => ['Makharijul Huruf', 'Sifat Huruf', 'Hukum Tajwid Lengkap', 'Praktik Bacaan Intensif'],
+                                        ];
+                                        $currentCurriculum = $curriculums[$class->name] ?? ['Makharijul Huruf', 'Sifat Huruf', 'Hukum Tajwid', 'Praktik Bacaan'];
+                                    @endphp
+
+                                    @foreach($currentCurriculum as $item)
                                     <li class="flex items-start">
                                         <svg class="w-5 h-5 text-islamic-emerald flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                        <span class="ml-3 text-sm text-gray-600 dark:text-gray-300">Kurikulum Terstruktur</span>
+                                        <span class="ml-3 text-sm text-gray-600 dark:text-gray-300">{{ $item }}</span>
                                     </li>
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-islamic-emerald flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                        <span class="ml-3 text-sm text-gray-600 dark:text-gray-300">Bimbingan Ustadz</span>
-                                    </li>
+                                    @endforeach
                                 </ul>
                             </div>
                             
