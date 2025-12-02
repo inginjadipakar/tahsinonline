@@ -238,5 +238,8 @@
 
             document.querySelectorAll('.animate-on-scroll').forEach((el) => observer.observe(el));
         </script>
+
+        <!-- Floating WhatsApp Button -->
+        <x-landing.whatsapp-float />
     </body>
 </html>
