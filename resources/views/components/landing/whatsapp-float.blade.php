@@ -1,4 +1,4 @@
-@props(['phone' => '6285156634353', 'message' => 'Assalamualaikum, saya ingin bertanya tentang program TahsinOnline'])
+@props(['phone' => '6282230466573', 'message' => 'Assalamualaikum, saya ingin bertanya tentang program TahsinOnline'])
 
 <a href="https://wa.me/{{ $phone }}?text={{ urlencode($message) }}" 
    target="_blank" 
