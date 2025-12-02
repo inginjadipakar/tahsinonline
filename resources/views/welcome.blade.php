@@ -151,8 +151,8 @@
                                         $curriculums = [
                                             'Tahsin Anak Reguler' => ['Pengenalan Huruf Hijaiyah', 'Makharijul Huruf Dasar', 'Hafalan Surat Pendek', 'Adab & Doa Harian'],
                                             'Tahsin Anak Privat' => ['Pengenalan Huruf Hijaiyah', 'Makharijul Huruf Dasar', 'Hafalan Surat Pendek', 'Fokus One-on-One'],
-                                            'Tahsin Reguler (Dewasa)' => ['Makharijul Huruf', 'Sifat Huruf', 'Hukum Nun Mati & Tanwin', 'Gharib & Musykilat'],
-                                            'Tahsin Privat (Dewasa)' => ['Makharijul Huruf', 'Sifat Huruf', 'Hukum Tajwid Lengkap', 'Praktik Bacaan Intensif'],
+                                            'Tahsin Reguler (Dewasa)' => ['Pengenalan Huruf Hijaiyah', 'Makharijul Huruf', 'Hukum Tajwid Dasar', 'Praktik Bacaan'],
+                                            'Tahsin Privat (Dewasa)' => ['Pengenalan Huruf Hijaiyah', 'Makharijul Huruf', 'Hukum Tajwid Lengkap', 'Praktik Bacaan Intensif'],
                                         ];
                                         $currentCurriculum = $curriculums[$class->name] ?? ['Makharijul Huruf', 'Sifat Huruf', 'Hukum Tajwid', 'Praktik Bacaan'];
                                     @endphp
