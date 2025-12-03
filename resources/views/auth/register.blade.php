@@ -29,27 +29,52 @@
         <!-- Class Selection -->
         <div>
             <x-input-label for="tahsin_class_id" value="Pilih Kelas Tahsin" />
-            <div class="mt-2 relative">
-                <select id="tahsin_class_id" name="tahsin_class_id" required
-                        class="block w-full pl-4 pr-10 py-3 text-base border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-islamic-emerald focus:border-islamic-emerald sm:text-sm rounded-xl transition-shadow shadow-sm">
-                    <option value="">-- Pilih Kelas yang Sesuai --</option>
-                    @foreach($classes as $class)
-                        <option value="{{ $class->id }}" 
-                                data-is-child="{{ str_contains(strtolower($class->name), 'anak') ? '1' : '0' }}"
-                                {{ old('tahsin_class_id') == $class->id ? 'selected' : '' }}>
-                            {{ $class->name }}
-                        </option>
-                    @endforeach
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            
+            @if(request('class_id'))
+                @php
+                    $selectedClass = $classes->firstWhere('id', request('class_id'));
+                @endphp
+                <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-islamic-emerald/10 flex items-center justify-center text-islamic-emerald">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900 dark:text-white">{{ $selectedClass->name }}</p>
+                            <p class="text-xs text-gray-500">Kelas Terpilih</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('register') }}" class="text-sm text-islamic-emerald hover:underline">Ubah</a>
                 </div>
-            </div>
-            <x-input-error :messages="$errors->get('tahsin_class_id')" class="mt-2" />
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1">
-                <svg class="w-4 h-4 text-islamic-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                Pilih kelas sesuai usia peserta
-            </p>
+                <input type="hidden" name="tahsin_class_id" id="tahsin_class_id" value="{{ request('class_id') }}">
+                
+                <!-- Hidden select for JS compatibility -->
+                <select id="hidden_class_select" style="display: none;">
+                    <option value="{{ $selectedClass->id }}" data-is-child="{{ str_contains(strtolower($selectedClass->name), 'anak') ? '1' : '0' }}" selected></option>
+                </select>
+            @else
+                <div class="mt-2 relative">
+                    <select id="tahsin_class_id" name="tahsin_class_id" required
+                            class="block w-full pl-4 pr-10 py-3 text-base border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-islamic-emerald focus:border-islamic-emerald sm:text-sm rounded-xl transition-shadow shadow-sm">
+                        <option value="">-- Pilih Kelas yang Sesuai --</option>
+                        @foreach($classes as $class)
+                            <option value="{{ $class->id }}" 
+                                    data-is-child="{{ str_contains(strtolower($class->name), 'anak') ? '1' : '0' }}"
+                                    {{ old('tahsin_class_id') == $class->id ? 'selected' : '' }}>
+                                {{ $class->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+                <x-input-error :messages="$errors->get('tahsin_class_id')" class="mt-2" />
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1">
+                    <svg class="w-4 h-4 text-islamic-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Pilih kelas sesuai usia peserta
+                </p>
+            @endif
         </div>
 
         <!-- For Child Classes - Parent Info -->
@@ -237,15 +262,30 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const classSelect = document.getElementById('tahsin_class_id');
+            const hiddenClassSelect = document.getElementById('hidden_class_select');
             const childForm = document.getElementById('child-form');
             const adultForm = document.getElementById('adult-form');
             const passwordSection = document.getElementById('password-section');
             const submitBtn = document.getElementById('submitBtn');
 
             function toggleForms() {
-                const selectedOption = classSelect.options[classSelect.selectedIndex];
-                const isChild = selectedOption.getAttribute('data-is-child') === '1';
-                const hasSelection = classSelect.value !== '';
+                let isChild = false;
+                let hasSelection = false;
+
+                // Check if we have a hidden input (pre-selected via URL) or a dropdown
+                if (classSelect.tagName === 'INPUT') {
+                    // Pre-selected mode
+                    const selectedOption = hiddenClassSelect.options[0];
+                    isChild = selectedOption.getAttribute('data-is-child') === '1';
+                    hasSelection = true;
+                } else {
+                    // Dropdown mode
+                    const selectedOption = classSelect.options[classSelect.selectedIndex];
+                    if (selectedOption && selectedOption.value) {
+                        isChild = selectedOption.getAttribute('data-is-child') === '1';
+                        hasSelection = true;
+                    }
+                }
 
                 // Show/hide forms with animation
                 childForm.style.display = (hasSelection && isChild) ? 'block' : 'none';
@@ -276,8 +316,10 @@
                 });
             }
 
-            // Listen for class selection changes
-            classSelect.addEventListener('change', toggleForms);
+            // Listen for class selection changes if it's a select element
+            if (classSelect.tagName === 'SELECT') {
+                classSelect.addEventListener('change', toggleForms);
+            }
 
             // Check on page load (for validation errors with old values)
             toggleForms();
