@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AdminSeeder::class,
+            TahsinDataSeeder::class, // Create classes first
+            TeacherSeeder::class,
         ]);
     }
 }

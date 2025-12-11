@@ -7,6 +7,8 @@ Route::get('/', function () {
     if (auth()->check()) {
         if (auth()->user()->role === 'admin') {
             return redirect()->route('admin.dashboard');
+        } elseif (auth()->user()->role === 'teacher') {
+            return redirect()->route('teacher.dashboard');
         }
         return redirect()->route('dashboard');
     }
@@ -18,7 +20,7 @@ Route::get('/', function () {
 Route::get('/seed-tahsin-classes', function () {
     // Cek apakah sudah ada data
     $existing = DB::table('tahsin_classes')->count();
-    
+
     if ($existing > 0) {
         return response()->json([
             'status' => 'already_seeded',
@@ -26,7 +28,7 @@ Route::get('/seed-tahsin-classes', function () {
             'total' => $existing
         ]);
     }
-    
+
     // Insert data dengan harga baru
     DB::table('tahsin_classes')->insert([
         [
@@ -66,7 +68,7 @@ Route::get('/seed-tahsin-classes', function () {
             'updated_at' => now(),
         ],
     ]);
-    
+
     return response()->json([
         'status' => 'success',
         'message' => '4 paket tahsin berhasil ditambahkan!',
@@ -90,7 +92,7 @@ Route::middleware('auth')->group(function () {
 
     // Student Subscription
     Route::get('/subscription', [StudentSubscriptionController::class, 'index'])->name('student.subscription.index');
-    
+
     // Program Selection
     Route::post('/program-selection', [\App\Http\Controllers\Student\ProgramSelectionController::class, 'store'])->name('student.program-selection.store');
 
@@ -124,7 +126,7 @@ Route::middleware(['auth', AdminOnly::class])->prefix('admin')->name('admin.')->
     Route::resource('subscriptions', AdminSubscriptionController::class);
     Route::resource('tahsin-classes', \App\Http\Controllers\Admin\TahsinClassController::class);
     Route::resource('lessons', \App\Http\Controllers\Admin\LessonController::class);
-    
+
     // Class Schedule Management
     Route::resource('schedules', \App\Http\Controllers\Admin\ClassScheduleController::class);
     Route::post('schedules/{schedule}/activate', [\App\Http\Controllers\Admin\ClassScheduleController::class, 'activate'])->name('schedules.activate');
@@ -146,4 +148,24 @@ Route::get('select-program', function (\Illuminate\Http\Request $request) {
     return view('auth.select-program', compact('class'));
 })->name('guest.select-program');
 
-require __DIR__.'/auth.php';
+// Teacher Routes
+use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Teacher\LessonController as TeacherLessonController;
+use App\Http\Controllers\Teacher\StudentProgressController as TeacherStudentProgressController;
+use App\Http\Middleware\TeacherOnly;
+
+Route::middleware(['auth', TeacherOnly::class])->prefix('teacher')->name('teacher.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [TeacherDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/switch-class', [TeacherDashboardController::class, 'switchClass'])->name('switch-class');
+
+    // Lesson Management
+    Route::resource('lessons', TeacherLessonController::class);
+    Route::get('lessons/{lesson}/download', [TeacherLessonController::class, 'download'])->name('lessons.download');
+
+    // Student Progress
+    Route::get('/students', [TeacherStudentProgressController::class, 'index'])->name('students.index');
+    Route::get('/students/{student}/progress', [TeacherStudentProgressController::class, 'show'])->name('students.show');
+});
+
+require __DIR__ . '/auth.php';
