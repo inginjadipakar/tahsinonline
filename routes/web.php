@@ -7,6 +7,8 @@ Route::get('/', function () {
     if (auth()->check()) {
         if (auth()->user()->role === 'admin') {
             return redirect()->route('admin.dashboard');
+        } elseif (auth()->user()->role === 'teacher') {
+            return redirect()->route('teacher.dashboard');
         }
         return redirect()->route('dashboard');
     }
@@ -14,7 +16,65 @@ Route::get('/', function () {
     return view('welcome', compact('classes'));
 });
 
+// Seed tahsin classes ke production database
+Route::get('/seed-tahsin-classes', function () {
+    // Cek apakah sudah ada data
+    $existing = DB::table('tahsin_classes')->count();
 
+    if ($existing > 0) {
+        return response()->json([
+            'status' => 'already_seeded',
+            'message' => 'Data sudah ada di database',
+            'total' => $existing
+        ]);
+    }
+
+    // Insert data dengan harga baru
+    DB::table('tahsin_classes')->insert([
+        [
+            'name' => 'Tahsin Anak Reguler',
+            'description' => 'Kelas tahsin untuk anak-anak dengan sistem reguler (3-6 peserta). Belajar membaca Al-Quran dengan benar sesuai kaidah tajwid dalam suasana yang menyenangkan.',
+            'price' => 150000,
+            'order' => 1,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'name' => 'Tahsin Anak Privat',
+            'description' => 'Kelas tahsin privat khusus untuk anak-anak dengan pendampingan personal one-on-one. Pembelajaran intensif dan fokus sesuai kemampuan anak.',
+            'price' => 350000,
+            'order' => 2,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'name' => 'Tahsin Reguler (Dewasa)',
+            'description' => 'Kelas tahsin untuk umum/dewasa dengan sistem reguler. Memperbaiki bacaan Al-Quran sesuai dengan kaidah tajwid yang benar.',
+            'price' => 120000,
+            'order' => 3,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'name' => 'Tahsin Privat (Dewasa)',
+            'description' => 'Kelas tahsin privat untuk dewasa dengan metode pembelajaran personal. Jadwal fleksibel dan materi disesuaikan dengan kebutuhan.',
+            'price' => 300000,
+            'order' => 4,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+    ]);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => '4 paket tahsin berhasil ditambahkan!',
+        'data' => DB::table('tahsin_classes')->orderBy('order')->get()
+    ]);
+});
 
 use App\Http\Controllers\DashboardController;
 
@@ -32,7 +92,7 @@ Route::middleware('auth')->group(function () {
 
     // Student Subscription
     Route::get('/subscription', [StudentSubscriptionController::class, 'index'])->name('student.subscription.index');
-    
+
     // Program Selection
     Route::post('/program-selection', [\App\Http\Controllers\Student\ProgramSelectionController::class, 'store'])->name('student.program-selection.store');
 
@@ -66,7 +126,7 @@ Route::middleware(['auth', AdminOnly::class])->prefix('admin')->name('admin.')->
     Route::resource('subscriptions', AdminSubscriptionController::class);
     Route::resource('tahsin-classes', \App\Http\Controllers\Admin\TahsinClassController::class);
     Route::resource('lessons', \App\Http\Controllers\Admin\LessonController::class);
-    
+
     // Class Schedule Management
     Route::resource('schedules', \App\Http\Controllers\Admin\ClassScheduleController::class);
     Route::post('schedules/{schedule}/activate', [\App\Http\Controllers\Admin\ClassScheduleController::class, 'activate'])->name('schedules.activate');
@@ -79,15 +139,6 @@ Route::middleware(['auth', AdminOnly::class])->group(function () {
     Route::put('/payments/{payment}', [PaymentController::class, 'update'])->name('payments.update');
 });
 
-// Teacher Routes (Placeholder for your friend)
-Route::middleware(['auth', 'teacher'])->prefix('teacher')->name('teacher.')->group(function () {
-    Route::get('/dashboard', function () {
-        return "Halaman Dashboard Guru (Under Construction)";
-    })->name('dashboard');
-    
-    // Add more teacher routes here...
-});
-
 // Guest Program Selection
 Route::get('select-program', function (\Illuminate\Http\Request $request) {
     $class = null;
@@ -97,4 +148,24 @@ Route::get('select-program', function (\Illuminate\Http\Request $request) {
     return view('auth.select-program', compact('class'));
 })->name('guest.select-program');
 
-require __DIR__.'/auth.php';
+// Teacher Routes
+use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Teacher\LessonController as TeacherLessonController;
+use App\Http\Controllers\Teacher\StudentProgressController as TeacherStudentProgressController;
+use App\Http\Middleware\TeacherOnly;
+
+Route::middleware(['auth', TeacherOnly::class])->prefix('teacher')->name('teacher.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [TeacherDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/switch-class', [TeacherDashboardController::class, 'switchClass'])->name('switch-class');
+
+    // Lesson Management
+    Route::resource('lessons', TeacherLessonController::class);
+    Route::get('lessons/{lesson}/download', [TeacherLessonController::class, 'download'])->name('lessons.download');
+
+    // Student Progress
+    Route::get('/students', [TeacherStudentProgressController::class, 'index'])->name('students.index');
+    Route::get('/students/{student}/progress', [TeacherStudentProgressController::class, 'show'])->name('students.show');
+});
+
+require __DIR__ . '/auth.php';

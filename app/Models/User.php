@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role',
         'tahsin_class_id',
+        'assigned_class_id',
         'gender',
         'age',
         'address',
@@ -85,5 +86,62 @@ class User extends Authenticatable
     public function tahsinClass(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(TahsinClass::class);
+    }
+
+    /**
+     * Get the tahsin class assigned to teacher.
+     */
+    /**
+     * Get the tahsin class assigned to teacher.
+     */
+    public function assignedClass(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(TahsinClass::class, 'assigned_class_id');
+    }
+
+    /**
+     * Get the tahsin classes assigned to teacher (Many-to-Many).
+     */
+    public function assignedClasses(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(TahsinClass::class, 'teacher_classes');
+    }
+
+    /**
+     * Helper to get all teacher classes (backward compatible).
+     */
+    public function getTeacherClasses(): \Illuminate\Support\Collection
+    {
+        // Priority: pivot table (with count check to avoid executing query if not loaded/needed, 
+        // but for safety we should just load it or check count)
+        // If we want to return a collection of models:
+        $classes = $this->assignedClasses;
+
+        if ($classes->isNotEmpty()) {
+            return $classes;
+        }
+
+        // Fallback: assigned_class_id
+        if ($this->assigned_class_id && $this->assignedClass) {
+            return collect([$this->assignedClass]);
+        }
+
+        return collect();
+    }
+
+    /**
+     * Get lessons created by this teacher.
+     */
+    public function createdLessons(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Lesson::class, 'created_by');
+    }
+
+    /**
+     * Check if user is a teacher.
+     */
+    public function isTeacher(): bool
+    {
+        return $this->role === 'teacher';
     }
 }

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class TeacherOnly
+class PreventBackHistory
 {
     /**
      * Handle an incoming request.
@@ -15,14 +15,10 @@ class TeacherOnly
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
-            return redirect()->route('login');
-        }
+        $response = $next($request);
 
-        if (auth()->user()->role !== 'teacher') {
-            abort(403, 'Unauthorized. Teacher access only.');
-        }
-
-        return $next($request);
+        return $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
 }

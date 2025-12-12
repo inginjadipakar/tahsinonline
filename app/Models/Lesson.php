@@ -12,6 +12,10 @@ class Lesson extends Model
         'description',
         'content',
         'video_url',
+        'file_path',
+        'file_type',
+        'file_size',
+        'created_by',
         'order',
     ];
 
@@ -28,5 +32,29 @@ class Lesson extends Model
     public function isCompletedBy($userId): bool
     {
         return $this->userProgress()->where('user_id', $userId)->where('is_completed', true)->exists();
+    }
+
+    /**
+     * Get the teacher who created this lesson.
+     */
+    public function creator(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Check if lesson has uploaded file.
+     */
+    public function hasFile(): bool
+    {
+        return !empty($this->file_path);
+    }
+
+    /**
+     * Scope to filter lessons by teacher.
+     */
+    public function scopeByTeacher($query, $teacherId)
+    {
+        return $query->where('created_by', $teacherId);
     }
 }

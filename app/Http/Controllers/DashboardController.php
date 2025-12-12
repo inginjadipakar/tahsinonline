@@ -11,30 +11,37 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
+
+        // Redirect if not student
+        if ($user->role === 'teacher') {
+            return redirect()->route('teacher.dashboard');
+        } elseif ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
         // Get enrolled class
         $enrolledClass = $user->tahsinClass;
-        
+
         // Initialize variables
         $lessons = collect();
         $currentLesson = null;
         $lessonsWithStatus = collect();
-        
+
         if ($enrolledClass) {
             // Get all lessons for this class
             $lessons = $enrolledClass->lessons()->orderBy('order')->get();
-            
+
             // Get user's completed lessons
             $completedLessonIds = UserProgress::where('user_id', $user->id)
                 ->where('is_completed', true)
                 ->pluck('lesson_id')
                 ->toArray();
-            
+
             // Determine lesson status and find current lesson
             $foundCurrent = false;
             $lessonsWithStatus = $lessons->map(function ($lesson, $index) use ($completedLessonIds, &$currentLesson, &$foundCurrent) {
                 $isCompleted = in_array($lesson->id, $completedLessonIds);
-                
+
                 // Determine status
                 if ($isCompleted) {
                     $status = 'completed';
@@ -47,7 +54,7 @@ class DashboardController extends Controller
                     // All subsequent lessons are locked
                     $status = 'locked';
                 }
-                
+
                 return [
                     'lesson' => $lesson,
                     'status' => $status,
@@ -57,21 +64,21 @@ class DashboardController extends Controller
                 ];
             });
         }
-        
+
         // Load schedules if enrolled
         $classSchedules = collect();
         $classInactive = false;
-        
+
         if ($enrolledClass) {
             // Load active schedules
             $classSchedules = $enrolledClass->activeSchedules()->orderBy('day_of_week')->get();
-            
+
             // Check if class is inactive (no active schedules)
             if (!$enrolledClass->isActive()) {
                 $classInactive = true;
             }
         }
-        
+
         return view('dashboard', [
             'enrolledClass' => $enrolledClass,
             'lessons' => $lessonsWithStatus,
