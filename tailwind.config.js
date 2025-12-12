@@ -25,6 +25,7 @@ export default {
             },
             backgroundImage: {
                 'islamic-pattern': "url('https://www.transparenttextures.com/patterns/arabesque.png')", // Subtle pattern
+                'arabic-calligraphy': "url(\"data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='serif' font-size='60' fill='%2310B981' fill-opacity='0.1' text-anchor='middle' dominant-baseline='middle' transform='rotate(-10, 100, 100)'%3Eاقرأ%3C/text%3E%3C/svg%3E\")",
             },
         },
     },

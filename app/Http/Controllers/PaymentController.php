@@ -107,14 +107,32 @@ class PaymentController extends Controller
 
         // If accepted, create or update subscription
         if ($request->status === 'accepted') {
-            \App\Models\Subscription::updateOrCreate(
-                ['user_id' => $payment->user_id],
-                [
+            $subscription = \App\Models\Subscription::where('user_id', $payment->user_id)->first();
+
+            if ($subscription) {
+                // Calculate original duration in days to maintain the package length
+                // We use days to be safe, or we could store the package type in the subscription
+                $durationInDays = $subscription->start_date->diffInDays($subscription->end_date);
+                
+                // If duration is less than 28 days (e.g. created just now), default to at least 1 month (30 days)
+                // But since we have monthly/semester/yearly, the diff should be correct.
+                // Let's ensure we don't shrink it.
+                $durationInDays = max($durationInDays, 30);
+
+                $subscription->update([
                     'status' => 'active',
                     'start_date' => now(),
-                    'end_date' => now()->addDays(28),
-                ]
-            );
+                    'end_date' => now()->addDays($durationInDays),
+                ]);
+            } else {
+                // Fallback if no subscription found
+                \App\Models\Subscription::create([
+                    'user_id' => $payment->user_id,
+                    'status' => 'active',
+                    'start_date' => now(),
+                    'end_date' => now()->addDays(30),
+                ]);
+            }
         }
 
         return redirect()->back()->with('success', 'Payment status updated.');

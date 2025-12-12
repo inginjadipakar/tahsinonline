@@ -108,13 +108,13 @@
             
             <x-landing.hero :data="config('landing.hero')" />
             
-            <div id="about">
+            <div id="about" class="bg-white bg-arabic-calligraphy">
                 <x-landing.problem-agitate :data="config('landing.problem')" />
             </div>
 
             <x-landing.solution-features :data="config('landing.solution')" />
             
-            <div id="pricing" class="py-20 bg-gray-50 dark:bg-gray-900">
+            <div id="pricing" class="py-20 bg-gray-50 dark:bg-gray-900 bg-arabic-calligraphy">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16">
                         <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">Pilih Paket Belajar</h2>
@@ -124,7 +124,7 @@
                     <!-- Existing Pricing Grid (Kept for functionality) -->
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         @foreach($classes as $index => $class)
-                        <div class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl group {{ $index === 2 ? 'ring-4 ring-islamic-gold scale-105 z-30' : '' }}">
+                        <div class="relative bg-white dark:bg-gray-800 bg-arabic-calligraphy rounded-3xl shadow-xl overflow-hidden flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl group {{ $index === 2 ? 'ring-4 ring-islamic-gold scale-105 z-30' : '' }}">
                             @if($index === 2)
                             <div class="absolute top-0 inset-x-0 h-2 bg-islamic-gold"></div>
                             <div class="absolute top-2 right-0 bg-islamic-gold text-islamic-navy text-xs font-bold px-3 py-1 rounded-l-full shadow-sm">

@@ -1,6 +1,6 @@
 @props(['data'])
 
-<section class="py-20 bg-white dark:bg-gray-800">
+<section class="py-20 bg-white dark:bg-gray-800 bg-arabic-calligraphy">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
             <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4 animate-on-scroll">

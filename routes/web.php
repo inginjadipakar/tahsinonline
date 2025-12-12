@@ -79,6 +79,15 @@ Route::middleware(['auth', AdminOnly::class])->group(function () {
     Route::put('/payments/{payment}', [PaymentController::class, 'update'])->name('payments.update');
 });
 
+// Teacher Routes (Placeholder for your friend)
+Route::middleware(['auth', 'teacher'])->prefix('teacher')->name('teacher.')->group(function () {
+    Route::get('/dashboard', function () {
+        return "Halaman Dashboard Guru (Under Construction)";
+    })->name('dashboard');
+    
+    // Add more teacher routes here...
+});
+
 // Guest Program Selection
 Route::get('select-program', function (\Illuminate\Http\Request $request) {
     $class = null;

@@ -1,6 +1,6 @@
 @props(['data'])
 
-<section class="py-24 bg-white dark:bg-islamic-navy relative overflow-hidden">
+<section class="py-24 bg-white dark:bg-islamic-navy bg-arabic-calligraphy relative overflow-hidden">
     <!-- Decorative Blob -->
     <div class="absolute top-0 right-0 w-1/3 h-full bg-islamic-emerald/5 skew-x-12 transform translate-x-20"></div>
 
