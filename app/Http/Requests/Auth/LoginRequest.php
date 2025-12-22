@@ -44,8 +44,15 @@ class LoginRequest extends FormRequest
         // Format phone number to 62xxx for consistency
         $phone = $this->input('phone');
         $phone = preg_replace('/[^0-9]/', '', $phone);
+        
+        // Handle different input formats:
+        // - 08xxx → 628xxx
+        // - 8xxx → 628xxx (user typed without 0 since UI shows +62)
+        // - 628xxx → 628xxx (already correct)
         if (str_starts_with($phone, '0')) {
             $phone = '62' . substr($phone, 1);
+        } elseif (!str_starts_with($phone, '62')) {
+            $phone = '62' . $phone;
         }
         $this->merge(['phone' => $phone]);
 

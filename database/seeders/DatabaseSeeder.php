@@ -15,18 +15,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Reset Users Table (Hapus semua user lama)
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        User::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
-        // 2. Pastikan Data Kelas Tahsin ada
+        // 1. Pastikan Data Kelas Tahsin ada
         $this->call([
             TahsinDataSeeder::class, 
         ]);
 
-        // Ambil ID kelas Tahsin Dewasa Reguler (asumsi order 3 atau nama mengandung Dewasa)
-        $tahsinDewasa = TahsinClass::where('name', 'like', '%Dewasa%')->first();
+        // 2. Hapus user dummy dari TahsinDataSeeder, ganti dengan akun kita
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        User::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        // Ambil ID kelas Tahsin Dewasa Reguler
+        $tahsinDewasa = TahsinClass::where('name', 'like', '%Reguler%Dewasa%')->first();
 
         // 3. Buat Akun Admin
         User::create([
@@ -44,7 +45,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Siswa Baru',
             'phone' => '628813224569',
-            'password' => Hash::make('mjsmulia24'), // Pakai password sama biar mudah diingat user
+            'password' => Hash::make('mjsmulia24'),
             'role' => 'student',
             'tahsin_class_id' => $tahsinDewasa ? $tahsinDewasa->id : 1,
             'gender' => 'male',
@@ -58,12 +59,17 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Ustadz Pengajar',
             'phone' => '6281216861835',
-            'password' => Hash::make('mjsmulia24'), // Pakai password sama
+            'password' => Hash::make('mjsmulia24'),
             'role' => 'teacher',
             'gender' => 'male',
             'address' => 'Rumah Guru',
             'occupation' => 'Pengajar Al-Quran',
             'age' => 35,
         ]);
+
+        echo "✅ Akun berhasil dibuat:\n";
+        echo "- Admin: 6282230466573 (pass: mjsmulia24)\n";
+        echo "- Siswa: 628813224569 (pass: mjsmulia24)\n";
+        echo "- Guru: 6281216861835 (pass: mjsmulia24)\n";
     }
 }

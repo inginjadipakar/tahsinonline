@@ -71,9 +71,14 @@ class RegisteredUserController extends Controller
         // Remove any non-numeric characters
         $phone = preg_replace('/[^0-9]/', '', $phone);
         
-        // Convert 08xx to 628xx
+        // Handle different input formats:
+        // - 08xxx → 628xxx
+        // - 8xxx → 628xxx (user typed without 0 since UI shows +62)
+        // - 628xxx → 628xxx (already correct)
         if (str_starts_with($phone, '0')) {
             $phone = '62' . substr($phone, 1);
+        } elseif (!str_starts_with($phone, '62')) {
+            $phone = '62' . $phone;
         }
         
         // Update request with formatted phone
