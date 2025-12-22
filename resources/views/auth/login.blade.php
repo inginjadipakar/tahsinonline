@@ -38,13 +38,11 @@
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
-                                </svg>
+                                <span class="text-gray-500 font-bold border-r border-gray-300 pr-2 mr-1">+62</span>
                             </div>
                             <input id="phone" type="text" name="phone" value="{{ old('phone') }}" 
-                                   class="block w-full pl-12 pr-4 py-3 border-2 @error('phone') border-red-300 @else border-gray-200 @enderror rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-gray-900 placeholder-gray-400" 
-                                   placeholder="08123456789" 
+                                   class="block w-full pl-16 pr-4 py-3 border-2 @error('phone') border-red-300 @else border-gray-200 @enderror rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-gray-900 placeholder-gray-400" 
+                                   placeholder="8123456789" 
                                    required autofocus autocomplete="username">
                         </div>
                         @error('phone')

@@ -66,6 +66,19 @@ class RegisteredUserController extends Controller
             $rules['age'] = ['required', 'integer', 'min:18', 'max:100'];
         }
 
+        // Format phone number to 62xxx
+        $phone = $request->phone;
+        // Remove any non-numeric characters
+        $phone = preg_replace('/[^0-9]/', '', $phone);
+        
+        // Convert 08xx to 628xx
+        if (str_starts_with($phone, '0')) {
+            $phone = '62' . substr($phone, 1);
+        }
+        
+        // Update request with formatted phone
+        $request->merge(['phone' => $phone]);
+
         $request->validate($rules);
 
         // Prepare user data

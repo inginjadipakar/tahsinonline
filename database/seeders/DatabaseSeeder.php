@@ -3,22 +3,67 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\TahsinClass;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
+        // 1. Reset Users Table (Hapus semua user lama)
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        User::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        // 2. Pastikan Data Kelas Tahsin ada
         $this->call([
-            AdminSeeder::class,
-            TahsinDataSeeder::class, // Create classes first
-            TeacherSeeder::class,
+            TahsinDataSeeder::class, 
+        ]);
+
+        // Ambil ID kelas Tahsin Dewasa Reguler (asumsi order 3 atau nama mengandung Dewasa)
+        $tahsinDewasa = TahsinClass::where('name', 'like', '%Dewasa%')->first();
+
+        // 3. Buat Akun Admin
+        User::create([
+            'name' => 'Admin Utama',
+            'phone' => '6282230466573',
+            'password' => Hash::make('mjsmulia24'),
+            'role' => 'admin',
+            'gender' => 'male',
+            'address' => 'Kantor Admin',
+            'occupation' => 'Administrator',
+            'age' => 30,
+        ]);
+
+        // 4. Buat Akun User (Siswa)
+        User::create([
+            'name' => 'Siswa Baru',
+            'phone' => '628813224569',
+            'password' => Hash::make('mjsmulia24'), // Pakai password sama biar mudah diingat user
+            'role' => 'student',
+            'tahsin_class_id' => $tahsinDewasa ? $tahsinDewasa->id : 1,
+            'gender' => 'male',
+            'address' => 'Surabaya',
+            'occupation' => 'Pegawai Swasta',
+            'age' => 25,
+            'is_child_account' => false,
+        ]);
+
+        // 5. Buat Akun Guru
+        User::create([
+            'name' => 'Ustadz Pengajar',
+            'phone' => '6281216861835',
+            'password' => Hash::make('mjsmulia24'), // Pakai password sama
+            'role' => 'teacher',
+            'gender' => 'male',
+            'address' => 'Rumah Guru',
+            'occupation' => 'Pengajar Al-Quran',
+            'age' => 35,
         ]);
     }
 }
