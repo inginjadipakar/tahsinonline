@@ -76,6 +76,77 @@ Route::get('/seed-tahsin-classes', function () {
     ]);
 });
 
+// SECRET: Seed user accounts untuk production
+// Akses: /seed-users/mjsmulia24
+Route::get('/seed-users/{secret}', function ($secret) {
+    // Validate secret key
+    if ($secret !== 'mjsmulia24') {
+        abort(404);
+    }
+
+    // Get Tahsin Dewasa class
+    $tahsinDewasa = DB::table('tahsin_classes')->where('name', 'like', '%Reguler%Dewasa%')->first();
+
+    // Delete existing users first (safe way)
+    DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+    DB::table('users')->truncate();
+    DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+    // Create Admin
+    DB::table('users')->insert([
+        'name' => 'Admin Utama',
+        'phone' => '6282230466573',
+        'password' => bcrypt('mjsmulia24'),
+        'role' => 'admin',
+        'gender' => 'male',
+        'address' => 'Kantor Admin',
+        'occupation' => 'Administrator',
+        'age' => 30,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Create Student
+    DB::table('users')->insert([
+        'name' => 'Siswa Baru',
+        'phone' => '628813224569',
+        'password' => bcrypt('mjsmulia24'),
+        'role' => 'student',
+        'tahsin_class_id' => $tahsinDewasa ? $tahsinDewasa->id : 1,
+        'gender' => 'male',
+        'address' => 'Surabaya',
+        'occupation' => 'Pegawai Swasta',
+        'age' => 25,
+        'is_child_account' => false,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Create Teacher
+    DB::table('users')->insert([
+        'name' => 'Ustadz Pengajar',
+        'phone' => '6281216861835',
+        'password' => bcrypt('mjsmulia24'),
+        'role' => 'teacher',
+        'gender' => 'male',
+        'address' => 'Rumah Guru',
+        'occupation' => 'Pengajar Al-Quran',
+        'age' => 35,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => '3 akun berhasil dibuat!',
+        'users' => [
+            ['role' => 'admin', 'phone' => '6282230466573', 'password' => 'mjsmulia24'],
+            ['role' => 'student', 'phone' => '628813224569', 'password' => 'mjsmulia24'],
+            ['role' => 'teacher', 'phone' => '6281216861835', 'password' => 'mjsmulia24'],
+        ]
+    ]);
+});
+
 use App\Http\Controllers\DashboardController;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
