@@ -101,12 +101,15 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Handle Subscription Creation if Package/Program selected
-        if ($request->has('selected_package') && $request->has('selected_program')) {
+        // Handle Subscription Creation - ALWAYS create subscription for new users
+        if ($request->tahsin_class_id) {
             $startDate = now();
             $endDate = now();
             
-            switch($request->selected_package) {
+            // Determine package duration (default to monthly if not specified)
+            $packageType = $request->selected_package ?? 'monthly';
+            
+            switch($packageType) {
                 case 'monthly':
                     $endDate = $startDate->copy()->addMonth();
                     break;
@@ -125,7 +128,7 @@ class RegisteredUserController extends Controller
                 'start_date' => $startDate,
                 'end_date' => $endDate,
                 'status' => 'pending', // Pending payment
-                'program_type' => $request->selected_program,
+                'program_type' => $request->selected_program ?? 'tahsin',
                 'tahsin_class_id' => $request->tahsin_class_id,
             ]);
         }

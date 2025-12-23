@@ -28,7 +28,12 @@ class PaymentController extends Controller
     public function create()
     {
         $user = auth()->user();
-        $subscription = $user->subscription()->where('status', 'pending')->with('tahsinClass')->first();
+        // Get LATEST pending subscription (in case user has multiple)
+        $subscription = $user->subscription()
+            ->where('status', 'pending')
+            ->with('tahsinClass')
+            ->orderBy('created_at', 'desc')
+            ->first();
         
         $amount = 0;
         $packageName = 'Paket Belajar';
