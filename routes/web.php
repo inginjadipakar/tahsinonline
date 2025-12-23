@@ -208,6 +208,7 @@ Route::middleware(['auth', AdminOnly::class])->prefix('admin')->name('admin.')->
 // Admin Payment Actions
 Route::middleware(['auth', AdminOnly::class])->group(function () {
     Route::put('/payments/{payment}', [PaymentController::class, 'update'])->name('payments.update');
+    Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
 });
 
 // Guest Program Selection

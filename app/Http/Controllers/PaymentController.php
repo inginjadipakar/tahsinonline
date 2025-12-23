@@ -150,6 +150,15 @@ class PaymentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $payment = \App\Models\Payment::findOrFail($id);
+        
+        // Delete the payment proof file
+        if ($payment->payment_proof) {
+            \Storage::disk('public')->delete($payment->payment_proof);
+        }
+        
+        $payment->delete();
+        
+        return redirect()->back()->with('success', 'Payment deleted successfully.');
     }
 }

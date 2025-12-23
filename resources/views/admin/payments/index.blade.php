@@ -17,7 +17,7 @@
                                     <th scope="col" class="px-6 py-3">Date</th>
                                     <th scope="col" class="px-6 py-3">Proof</th>
                                     <th scope="col" class="px-6 py-3">Status</th>
-                                    <th scope="col" class="px-6 py-3">Actions</th>
+                                    <th scope="col" class="px-6 py-3 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -36,7 +36,6 @@
                                         $userPhone = $payment->user?->phone ?? '';
                                         $subscription = $payment->user?->subscription;
                                         $className = $subscription?->tahsinClass?->name ?? 'Kelas Tahsin';
-                                        $proofUrl = url('storage/' . $payment->payment_proof);
                                         
                                         // WhatsApp message for approval
                                         $waApproveMessage = "Assalamu'alaikum {$userName},
@@ -51,95 +50,116 @@ Selamat belajar! Semoga Allah mudahkan dalam mempelajari Al-Qur'an.
 
 Jazakallahu khairan 🙏
 - Admin Tahsinku";
-
-                                        // WhatsApp message for rejection
-                                        $waRejectMessage = "Assalamu'alaikum {$userName},
-
-Mohon maaf, pembayaran Anda belum dapat kami verifikasi ❌
-
-Kemungkinan penyebab:
-• Nominal tidak sesuai
-• Bukti transfer tidak jelas
-• Transfer ke rekening yang salah
-
-Silakan upload ulang bukti pembayaran atau hubungi admin untuk klarifikasi.
-
-Jazakallahu khairan 🙏
-- Admin Tahsinku";
                                         
-                                        $waApproveUrl = $userPhone ? "https://wa.me/{$userPhone}?text=" . urlencode($waApproveMessage) : '#';
-                                        $waRejectUrl = $userPhone ? "https://wa.me/{$userPhone}?text=" . urlencode($waRejectMessage) : '#';
+                                        $waApproveUrl = $userPhone ? "https://wa.me/{$userPhone}?text=" . urlencode($waApproveMessage) : '';
                                     @endphp
-                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50">
                                         <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             {{ $payment->user?->name ?? 'User Deleted' }}<br>
                                             <span class="text-xs text-gray-500">{{ $payment->user?->phone ?? '-' }}</span>
                                         </td>
-                                        <td class="px-6 py-4">{{ $payment->created_at->format('d M Y H:i') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $payment->created_at->format('d M Y H:i') }}</td>
                                         <td class="px-6 py-4">
-                                            <a href="{{ asset('storage/' . $payment->payment_proof) }}" target="_blank" class="text-blue-600 hover:underline">View Image</a>
+                                            <a href="{{ asset('storage/' . $payment->payment_proof) }}" target="_blank" class="text-blue-600 hover:underline inline-flex items-center gap-1">
+                                                <svg class="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
+                                                    <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM156,88a20,20,0,1,1-20,20A20,20,0,0,1,156,88Zm60,112H40V178.95l49.17-42.16a8,8,0,0,1,10.56.18l24.31,22.22,58.13-64.58a8,8,0,0,1,11.17-.63L216,114Z"/>
+                                                </svg>
+                                                View
+                                            </a>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                @if($payment->status === 'accepted') bg-green-100 text-green-800 
-                                                @elseif($payment->status === 'rejected') bg-red-100 text-red-800 
-                                                @else bg-yellow-100 text-yellow-800 @endif">
-                                                {{ ucfirst($payment->status) }}
-                                            </span>
+                                            @if($payment->status === 'accepted')
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                    <svg class="w-3 h-3" viewBox="0 0 256 256" fill="currentColor">
+                                                        <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/>
+                                                    </svg>
+                                                    Accepted
+                                                </span>
+                                            @elseif($payment->status === 'rejected')
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                                    <svg class="w-3 h-3" viewBox="0 0 256 256" fill="currentColor">
+                                                        <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/>
+                                                    </svg>
+                                                    Rejected
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                    <svg class="w-3 h-3 animate-spin" viewBox="0 0 256 256" fill="currentColor">
+                                                        <path d="M136,32V64a8,8,0,0,1-16,0V32a8,8,0,0,1,16,0Zm88,88H192a8,8,0,0,0,0,16h32a8,8,0,0,0,0-16Zm-62.22,61.77a8,8,0,0,0-11.32,11.32l22.63,22.63a8,8,0,0,0,11.32-11.32ZM128,184a8,8,0,0,0-8,8v32a8,8,0,0,0,16,0V192A8,8,0,0,0,128,184Z"/>
+                                                    </svg>
+                                                    Pending
+                                                </span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4">
-                                            @if($payment->status === 'pending')
-                                                <div class="flex flex-wrap gap-2">
+                                            <div class="flex items-center justify-center gap-1">
+                                                @if($payment->status === 'pending')
                                                     {{-- Approve Button --}}
-                                                    <form action="{{ route('payments.update', $payment) }}" method="POST" onsubmit="return confirm('Approve pembayaran ini?');">
+                                                    <form action="{{ route('payments.update', $payment) }}" method="POST" class="inline" onsubmit="return confirm('Approve pembayaran ini?');">
                                                         @csrf
                                                         @method('PUT')
                                                         <input type="hidden" name="status" value="accepted">
-                                                        <button type="submit" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-xs px-3 py-2">
-                                                            ✓ Approve
+                                                        <button type="submit" title="Approve" class="p-2 text-white bg-green-500 hover:bg-green-600 rounded-lg transition-colors">
+                                                            <svg class="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
+                                                                <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/>
+                                                            </svg>
                                                         </button>
                                                     </form>
                                                     
                                                     {{-- Reject Button --}}
-                                                    <form action="{{ route('payments.update', $payment) }}" method="POST" onsubmit="return confirm('Reject pembayaran ini?');">
+                                                    <form action="{{ route('payments.update', $payment) }}" method="POST" class="inline" onsubmit="return confirm('Reject pembayaran ini?');">
                                                         @csrf
                                                         @method('PUT')
                                                         <input type="hidden" name="status" value="rejected">
-                                                        <button type="submit" class="text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-xs px-3 py-2">
-                                                            ✕ Reject
+                                                        <button type="submit" title="Reject" class="p-2 text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors">
+                                                            <svg class="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
+                                                                <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/>
+                                                            </svg>
                                                         </button>
                                                     </form>
                                                     
                                                     {{-- WhatsApp Approve Notification --}}
-                                                    @if($userPhone)
-                                                    <a href="{{ $waApproveUrl }}" target="_blank" class="inline-flex items-center gap-1 text-white bg-emerald-500 hover:bg-emerald-600 font-medium rounded-lg text-xs px-3 py-2">
-                                                        <svg class="w-3 h-3" viewBox="0 0 256 256" fill="currentColor">
+                                                    @if($waApproveUrl)
+                                                    <a href="{{ $waApproveUrl }}" target="_blank" title="Send WhatsApp" class="p-2 text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg transition-colors">
+                                                        <svg class="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
                                                             <path d="M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88,40,40,0,0,0,40-40A8,8,0,0,0,187.58,144.84Z"/>
                                                         </svg>
-                                                        WA ✓
                                                     </a>
                                                     @endif
-                                                </div>
-                                            @elseif($payment->status === 'accepted')
-                                                {{-- Already approved - show WA button to send confirmation again --}}
-                                                @if($userPhone)
-                                                <a href="{{ $waApproveUrl }}" target="_blank" class="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-700 text-xs font-medium">
-                                                    <svg class="w-3 h-3" viewBox="0 0 256 256" fill="currentColor">
-                                                        <path d="M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88,40,40,0,0,0,40-40A8,8,0,0,0,187.58,144.84Z"/>
-                                                    </svg>
-                                                    Kirim WA
-                                                </a>
+                                                @elseif($payment->status === 'accepted')
+                                                    {{-- Send WA for accepted --}}
+                                                    @if($waApproveUrl)
+                                                    <a href="{{ $waApproveUrl }}" target="_blank" title="Send WhatsApp" class="p-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors">
+                                                        <svg class="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
+                                                            <path d="M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88,40,40,0,0,0,40-40A8,8,0,0,0,187.58,144.84Z"/>
+                                                        </svg>
+                                                    </a>
+                                                    @endif
+                                                    <span class="text-xs text-gray-400 ml-1">✓ Done</span>
                                                 @else
-                                                <span class="text-gray-400 text-xs">✓ Approved</span>
+                                                    {{-- Delete button for rejected --}}
+                                                    <form action="{{ route('payments.destroy', $payment) }}" method="POST" class="inline" onsubmit="return confirm('Delete payment ini permanen?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" title="Delete" class="p-2 text-white bg-gray-500 hover:bg-gray-600 rounded-lg transition-colors">
+                                                            <svg class="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
+                                                                <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </form>
+                                                    <span class="text-xs text-red-400 ml-1">Rejected</span>
                                                 @endif
-                                            @else
-                                                <span class="text-gray-400 text-xs">✕ Rejected</span>
-                                            @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-6 py-4 text-center">No payments found.</td>
+                                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                            <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" viewBox="0 0 256 256" fill="currentColor">
+                                                <path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,16V88H32V64Zm0,128H32V104H224v88Z"/>
+                                            </svg>
+                                            No payments found.
+                                        </td>
                                     </tr>
                                 @endforelse
                             </tbody>
