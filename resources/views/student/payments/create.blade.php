@@ -63,7 +63,7 @@ Jazakallahu khairan 🙏";
                                 <div>
                                     <p class="font-bold text-gray-900 dark:text-white">BSI (Bank Syariah Indonesia)</p>
                                     <p class="font-mono text-lg text-gray-600 dark:text-gray-300">7271614122</p>
-                                    <p class="text-sm text-gray-500">a.n. Yayasan Tahsin Online</p>
+                                    <p class="text-sm text-gray-500">a.n. Masjid Jami Sosrohadisewoyo</p>
                                 </div>
                                 <button onclick="navigator.clipboard.writeText('7271614122'); alert('Nomor rekening berhasil disalin!')" class="text-islamic-emerald hover:text-islamic-emerald-dark text-sm font-semibold">
                                     Salin
