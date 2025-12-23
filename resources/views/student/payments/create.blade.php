@@ -62,10 +62,10 @@ Jazakallahu khairan 🙏";
                             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-between">
                                 <div>
                                     <p class="font-bold text-gray-900 dark:text-white">BSI (Bank Syariah Indonesia)</p>
-                                    <p class="font-mono text-lg text-gray-600 dark:text-gray-300">1234-5678-90</p>
+                                    <p class="font-mono text-lg text-gray-600 dark:text-gray-300">7271614122</p>
                                     <p class="text-sm text-gray-500">a.n. Yayasan Tahsin Online</p>
                                 </div>
-                                <button onclick="navigator.clipboard.writeText('1234567890'); alert('Nomor rekening berhasil disalin!')" class="text-islamic-emerald hover:text-islamic-emerald-dark text-sm font-semibold">
+                                <button onclick="navigator.clipboard.writeText('7271614122'); alert('Nomor rekening berhasil disalin!')" class="text-islamic-emerald hover:text-islamic-emerald-dark text-sm font-semibold">
                                     Salin
                                 </button>
                             </div>
