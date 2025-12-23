@@ -147,6 +147,35 @@ Route::get('/seed-users/{secret}', function ($secret) {
     ]);
 });
 
+// SECRET: Delete user by phone (for admin cleanup)
+// Akses: /delete-user/mjsmulia24/6281558402888
+Route::get('/delete-user/{secret}/{phone}', function ($secret, $phone) {
+    if ($secret !== 'mjsmulia24') {
+        abort(404);
+    }
+
+    $user = \App\Models\User::where('phone', $phone)->first();
+    
+    if (!$user) {
+        return response()->json([
+            'status' => 'not_found',
+            'message' => "User dengan phone {$phone} tidak ditemukan."
+        ]);
+    }
+
+    $userName = $user->name;
+    
+    // Delete related records
+    $user->subscription()->delete();
+    \App\Models\Payment::where('user_id', $user->id)->delete();
+    $user->delete();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => "User '{$userName}' dengan phone {$phone} berhasil dihapus!"
+    ]);
+});
+
 use App\Http\Controllers\DashboardController;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
