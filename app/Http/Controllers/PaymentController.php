@@ -105,24 +105,27 @@ class PaymentController extends Controller
         $payment = \App\Models\Payment::findOrFail($id);
         $payment->update(['status' => $request->status]);
 
-        // If accepted, create or update subscription
+        // If accepted, create or update subscription with fixed billing date (25th)
         if ($request->status === 'accepted') {
             $subscription = \App\Models\Subscription::where('user_id', $payment->user_id)->first();
 
-            if ($subscription) {
-                // Calculate original duration in days to maintain the package length
-                // We use days to be safe, or we could store the package type in the subscription
-                $durationInDays = $subscription->start_date->diffInDays($subscription->end_date);
-                
-                // If duration is less than 28 days (e.g. created just now), default to at least 1 month (30 days)
-                // But since we have monthly/semester/yearly, the diff should be correct.
-                // Let's ensure we don't shrink it.
-                $durationInDays = max($durationInDays, 30);
+            // Calculate next 25th date for billing cycle
+            $now = now();
+            $currentDay = $now->day;
+            
+            // If we're before the 25th, set to 25th of current month
+            // If we're on or after 25th, set to 25th of next month
+            if ($currentDay < 25) {
+                $nextBillingDate = $now->copy()->setDay(25);
+            } else {
+                $nextBillingDate = $now->copy()->addMonth()->setDay(25);
+            }
 
+            if ($subscription) {
                 $subscription->update([
                     'status' => 'active',
                     'start_date' => now(),
-                    'end_date' => now()->addDays($durationInDays),
+                    'end_date' => $nextBillingDate,
                 ]);
             } else {
                 // Fallback if no subscription found
@@ -130,7 +133,7 @@ class PaymentController extends Controller
                     'user_id' => $payment->user_id,
                     'status' => 'active',
                     'start_date' => now(),
-                    'end_date' => now()->addDays(30),
+                    'end_date' => $nextBillingDate,
                 ]);
             }
         }
