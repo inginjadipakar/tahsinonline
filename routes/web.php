@@ -76,7 +76,7 @@ Route::get('/seed-tahsin-classes', function () {
     ]);
 });
 
-// SECRET: Seed user accounts untuk production
+// SECRET: Seed user accounts untuk production (SAFE - tidak menghapus user lain)
 // Akses: /seed-users/mjsmulia24
 Route::get('/seed-users/{secret}', function ($secret) {
     // Validate secret key
@@ -87,63 +87,63 @@ Route::get('/seed-users/{secret}', function ($secret) {
     // Get Tahsin Dewasa class
     $tahsinDewasa = DB::table('tahsin_classes')->where('name', 'like', '%Reguler%Dewasa%')->first();
 
-    // Delete existing users first (safe way)
-    DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-    DB::table('users')->truncate();
-    DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    $results = [];
 
-    // Create Admin
-    DB::table('users')->insert([
-        'name' => 'Admin Utama',
-        'phone' => '6282230466573',
-        'password' => bcrypt('mjsmulia24'),
-        'role' => 'admin',
-        'gender' => 'male',
-        'address' => 'Kantor Admin',
-        'occupation' => 'Administrator',
-        'age' => 30,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
+    // Create or Update Admin (tidak menghapus user lain)
+    $admin = \App\Models\User::updateOrCreate(
+        ['phone' => '6282230466573'], // Find by phone
+        [
+            'name' => 'Admin Utama',
+            'password' => bcrypt('mjsmulia24'),
+            'role' => 'admin',
+            'gender' => 'male',
+            'address' => 'Kantor Admin',
+            'occupation' => 'Administrator',
+            'age' => 30,
+        ]
+    );
+    $results[] = ['role' => 'admin', 'phone' => '6282230466573', 'status' => $admin->wasRecentlyCreated ? 'created' : 'updated'];
 
-    // Create Student
-    DB::table('users')->insert([
-        'name' => 'Siswa Baru',
-        'phone' => '628813224569',
-        'password' => bcrypt('mjsmulia24'),
-        'role' => 'student',
-        'tahsin_class_id' => $tahsinDewasa ? $tahsinDewasa->id : 1,
-        'gender' => 'male',
-        'address' => 'Surabaya',
-        'occupation' => 'Pegawai Swasta',
-        'age' => 25,
-        'is_child_account' => false,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
+    // Create or Update Student
+    $student = \App\Models\User::updateOrCreate(
+        ['phone' => '628813224569'],
+        [
+            'name' => 'Siswa Baru',
+            'password' => bcrypt('mjsmulia24'),
+            'role' => 'student',
+            'tahsin_class_id' => $tahsinDewasa ? $tahsinDewasa->id : 1,
+            'gender' => 'male',
+            'address' => 'Surabaya',
+            'occupation' => 'Pegawai Swasta',
+            'age' => 25,
+            'is_child_account' => false,
+        ]
+    );
+    $results[] = ['role' => 'student', 'phone' => '628813224569', 'status' => $student->wasRecentlyCreated ? 'created' : 'updated'];
 
-    // Create Teacher
-    DB::table('users')->insert([
-        'name' => 'Ustadz Pengajar',
-        'phone' => '6281216861835',
-        'password' => bcrypt('mjsmulia24'),
-        'role' => 'teacher',
-        'gender' => 'male',
-        'address' => 'Rumah Guru',
-        'occupation' => 'Pengajar Al-Quran',
-        'age' => 35,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
+    // Create or Update Teacher
+    $teacher = \App\Models\User::updateOrCreate(
+        ['phone' => '6281216861835'],
+        [
+            'name' => 'Ustadz Pengajar',
+            'password' => bcrypt('mjsmulia24'),
+            'role' => 'teacher',
+            'gender' => 'male',
+            'address' => 'Rumah Guru',
+            'occupation' => 'Pengajar Al-Quran',
+            'age' => 35,
+        ]
+    );
+    $results[] = ['role' => 'teacher', 'phone' => '6281216861835', 'status' => $teacher->wasRecentlyCreated ? 'created' : 'updated'];
+
+    // Count total users
+    $totalUsers = \App\Models\User::count();
 
     return response()->json([
         'status' => 'success',
-        'message' => '3 akun berhasil dibuat!',
-        'users' => [
-            ['role' => 'admin', 'phone' => '6282230466573', 'password' => 'mjsmulia24'],
-            ['role' => 'student', 'phone' => '628813224569', 'password' => 'mjsmulia24'],
-            ['role' => 'teacher', 'phone' => '6281216861835', 'password' => 'mjsmulia24'],
-        ]
+        'message' => '3 akun default berhasil dibuat/diupdate! User lain TIDAK dihapus.',
+        'total_users_in_db' => $totalUsers,
+        'default_accounts' => $results
     ]);
 });
 
