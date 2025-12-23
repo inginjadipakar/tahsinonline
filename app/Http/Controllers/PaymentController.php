@@ -70,7 +70,10 @@ class PaymentController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('payments.index')->with('success', 'Payment proof uploaded successfully.');
+        return redirect()->route('payments.index')->with([
+            'success' => 'Bukti pembayaran berhasil diupload!',
+            'open_whatsapp' => true,
+        ]);
     }
 
     /**

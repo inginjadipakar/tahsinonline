@@ -139,7 +139,18 @@ Jazakallahu khairan 🙏";
                         {{ $payments->links() }}
                     </div>
                 </div>
+                </div>
             </div>
         </div>
     </div>
+
+    {{-- Auto-open WhatsApp after successful upload --}}
+    @if(session('open_whatsapp'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Open WhatsApp in new tab
+            window.open("{{ $waUrl }}", '_blank');
+        });
+    </script>
+    @endif
 </x-app-layout>
