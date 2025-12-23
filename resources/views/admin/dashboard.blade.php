@@ -1,4 +1,8 @@
 <x-app-layout>
+    @php
+        // Get pending payment count for notification badge
+        $pendingPaymentsCount = \App\Models\Payment::where('status', 'pending')->count();
+    @endphp
     <x-slot name="header">
         <div>
             <h2 class="font-bold text-2xl text-gray-900 leading-tight flex items-center gap-2">
@@ -33,8 +37,18 @@
 
             {{-- Quick Actions Grid - Hixme Style --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {{-- Payments Card --}}
-                <a href="{{ route('payments.index') }}" class="group bg-white rounded-2xl shadow-sm hover:shadow-lg p-6 transition-all duration-300 border border-gray-100 hover:border-teal-200">
+                {{-- Payments Card with Notification Badge --}}
+                <a href="{{ route('payments.index') }}" class="group bg-white rounded-2xl shadow-sm hover:shadow-lg p-6 transition-all duration-300 border border-gray-100 hover:border-teal-200 relative">
+                    {{-- Notification Badge --}}
+                    @if($pendingPaymentsCount > 0)
+                    <div class="absolute -top-2 -right-2 flex items-center justify-center">
+                        <span class="absolute inline-flex h-6 w-6 rounded-full bg-red-400 opacity-75 animate-ping"></span>
+                        <span class="relative inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-500 text-white text-xs font-bold">
+                            {{ $pendingPaymentsCount > 9 ? '9+' : $pendingPaymentsCount }}
+                        </span>
+                    </div>
+                    @endif
+                    
                     <div class="flex items-start gap-4">
                         <div class="bg-teal-50 rounded-xl p-4 group-hover:bg-teal-100 transition-colors">
                             <svg class="w-8 h-8 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
@@ -43,7 +57,12 @@
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-lg font-bold text-gray-900 mb-1">Payments</h3>
+                            <h3 class="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
+                                Payments
+                                @if($pendingPaymentsCount > 0)
+                                <span class="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">{{ $pendingPaymentsCount }} pending</span>
+                                @endif
+                            </h3>
                             <p class="text-gray-500 text-sm">Kelola bukti pembayaran dari siswa</p>
                         </div>
                         <svg class="w-5 h-5 text-gray-300 group-hover:text-teal-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
