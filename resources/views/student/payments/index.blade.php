@@ -117,6 +117,7 @@
         $subscription = $user->subscription;
         $waNumber = '6282230466573';
         $className = $subscription && $subscription->tahsinClass ? $subscription->tahsinClass->name : 'Kelas Tahsin';
+        $proofUrl = session('payment_proof_url', '');
         
         $waMessage = "Assalamu'alaikum Admin Tahsinku,
 
@@ -126,6 +127,9 @@ Saya ingin konfirmasi pembayaran dengan detail berikut:
 • Nama: {$user->name}
 • No. HP: {$user->phone}
 • Kelas: {$className}
+
+📎 *Bukti Pembayaran*:
+{$proofUrl}
 
 Saya sudah mengupload bukti pembayaran dan menunggu verifikasi. Mohon untuk dicek.
 

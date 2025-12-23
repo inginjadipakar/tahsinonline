@@ -73,6 +73,7 @@ class PaymentController extends Controller
         return redirect()->route('payments.index')->with([
             'success' => 'Bukti pembayaran berhasil diupload!',
             'open_whatsapp' => true,
+            'payment_proof_url' => asset('storage/' . $path),
         ]);
     }
 
