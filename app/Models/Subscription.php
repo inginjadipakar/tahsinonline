@@ -27,4 +27,12 @@ class Subscription extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Get the tahsin class associated with the subscription.
+     */
+    public function tahsinClass(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(TahsinClass::class);
+    }
 }
