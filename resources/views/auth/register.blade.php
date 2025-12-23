@@ -239,16 +239,24 @@
             
             <div class="grid grid-cols-1 gap-6">
                 <div>
-                    <x-input-label for="password" value="Password *" />
-                    <x-text-input id="password" class="block mt-2 w-full py-3 rounded-xl" type="password" name="password" 
-                                  placeholder="Minimal 8 karakter" />
+                    <x-password-input 
+                        id="password" 
+                        name="password" 
+                        label="Password" 
+                        placeholder="Minimal 8 karakter"
+                        :showStrengthMeter="true"
+                    />
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
 
                 <div>
-                    <x-input-label for="password_confirmation" value="Konfirmasi Password *" />
-                    <x-text-input id="password_confirmation" class="block mt-2 w-full py-3 rounded-xl" type="password" 
-                                  name="password_confirmation" placeholder="Ketik ulang password" />
+                    <x-password-input 
+                        id="password_confirmation" 
+                        name="password_confirmation" 
+                        label="Konfirmasi Password" 
+                        placeholder="Ketik ulang password"
+                        autocomplete="new-password"
+                    />
                     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                 </div>
             </div>
