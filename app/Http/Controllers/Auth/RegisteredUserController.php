@@ -66,22 +66,8 @@ class RegisteredUserController extends Controller
             $rules['age'] = ['required', 'integer', 'min:18', 'max:100'];
         }
 
-        // Format phone number to 62xxx
-        $phone = $request->phone;
-        // Remove any non-numeric characters
-        $phone = preg_replace('/[^0-9]/', '', $phone);
-        
-        // Handle different input formats:
-        // - 08xxx → 628xxx
-        // - 8xxx → 628xxx (user typed without 0 since UI shows +62)
-        // - 628xxx → 628xxx (already correct)
-        if (str_starts_with($phone, '0')) {
-            $phone = '62' . substr($phone, 1);
-        } elseif (!str_starts_with($phone, '62')) {
-            $phone = '62' . $phone;
-        }
-        
-        // Update request with formatted phone
+        // Format phone number using helper
+        $phone = \App\Helpers\PhoneHelper::normalize($request->phone);
         $request->merge(['phone' => $phone]);
 
         $request->validate($rules);
