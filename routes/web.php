@@ -239,4 +239,19 @@ Route::middleware(['auth', TeacherOnly::class])->prefix('teacher')->name('teache
     Route::get('/students/{student}/progress', [TeacherStudentProgressController::class, 'show'])->name('students.show');
 });
 
+// Storage file serving for Railway (fallback when storage:link doesn't work)
+Route::get('/storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    
+    $mimeType = mime_content_type($fullPath);
+    
+    return response()->file($fullPath, [
+        'Content-Type' => $mimeType,
+    ]);
+})->where('path', '.*');
+
 require __DIR__ . '/auth.php';
