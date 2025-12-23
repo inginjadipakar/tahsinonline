@@ -2,7 +2,7 @@
     'id' => 'password',
     'name' => 'password',
     'label' => 'Password',
-    'placeholder' => 'Masukkan password',
+    'placeholder' => '',
     'showStrengthMeter' => false,
     'required' => true,
     'autocomplete' => 'new-password'
@@ -11,54 +11,19 @@
 <div x-data="{ 
     show: false, 
     password: '',
-    strength: 0,
-    strengthText: '',
-    strengthColor: '',
-    checkStrength() {
-        let score = 0;
-        const pwd = this.password;
-        
-        if (pwd.length >= 8) score++;
-        if (pwd.length >= 12) score++;
-        if (/[a-z]/.test(pwd)) score++;
-        if (/[A-Z]/.test(pwd)) score++;
-        if (/[0-9]/.test(pwd)) score++;
-        if (/[^a-zA-Z0-9]/.test(pwd)) score++;
-        
-        this.strength = score;
-        
-        if (score <= 2) {
-            this.strengthText = 'Lemah';
-            this.strengthColor = 'bg-red-500';
-        } else if (score <= 4) {
-            this.strengthText = 'Sedang';
-            this.strengthColor = 'bg-yellow-500';
-        } else {
-            this.strengthText = 'Kuat';
-            this.strengthColor = 'bg-green-500';
-        }
-    }
 }">
     <label for="{{ $id }}" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-        {{ $label }} @if($required)<span class="text-red-500">*</span>@endif
+        {{ $label }}
     </label>
     
     <div class="relative">
-        {{-- Lock Icon --}}
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-            </svg>
-        </div>
-        
         {{-- Input Field --}}
         <input 
             id="{{ $id }}" 
             name="{{ $name }}"
             :type="show ? 'text' : 'password'"
             x-model="password"
-            @if($showStrengthMeter) @input="checkStrength()" @endif
-            class="block w-full pl-12 pr-12 py-3 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors placeholder-gray-400"
+            class="block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors placeholder-gray-400 pr-12"
             placeholder="{{ $placeholder }}"
             @if($required) required @endif
             autocomplete="{{ $autocomplete }}"
@@ -82,71 +47,62 @@
         </button>
     </div>
     
-    {{-- Password Strength Meter --}}
+    {{-- Password Requirements Checklist --}}
     @if($showStrengthMeter)
-    <div x-show="password.length > 0" x-cloak class="mt-3">
-        {{-- Strength Bar --}}
-        <div class="flex gap-1 mb-2">
-            <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                <div class="h-full transition-all duration-300" 
-                     :class="[strengthColor, strength >= 1 ? 'w-full' : 'w-0']"></div>
+    <div class="mt-4 space-y-2">
+        {{-- Huruf besar --}}
+        <div class="flex items-center gap-3">
+            <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
+                 :class="/[A-Z]/.test(password) ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
+                <svg x-show="/[A-Z]/.test(password)" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
             </div>
-            <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                <div class="h-full transition-all duration-300" 
-                     :class="[strengthColor, strength >= 2 ? 'w-full' : 'w-0']"></div>
-            </div>
-            <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                <div class="h-full transition-all duration-300" 
-                     :class="[strengthColor, strength >= 4 ? 'w-full' : 'w-0']"></div>
-            </div>
-            <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                <div class="h-full transition-all duration-300" 
-                     :class="[strengthColor, strength >= 5 ? 'w-full' : 'w-0']"></div>
-            </div>
+            <span class="text-sm transition-colors" :class="/[A-Z]/.test(password) ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Huruf besar (A-Z)</span>
         </div>
-        
-        {{-- Strength Text --}}
-        <div class="flex items-center justify-between text-xs">
-            <span class="text-gray-500 dark:text-gray-400">Kekuatan Password:</span>
-            <span :class="{
-                'text-red-500': strength <= 2,
-                'text-yellow-500': strength > 2 && strength <= 4,
-                'text-green-500': strength > 4
-            }" class="font-semibold" x-text="strengthText"></span>
+
+        {{-- Huruf kecil --}}
+        <div class="flex items-center gap-3">
+            <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
+                 :class="/[a-z]/.test(password) ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
+                <svg x-show="/[a-z]/.test(password)" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <span class="text-sm transition-colors" :class="/[a-z]/.test(password) ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Huruf kecil (a-z)</span>
         </div>
-        
-        {{-- Requirements Checklist --}}
-        <div class="mt-2 space-y-1 text-xs text-gray-500 dark:text-gray-400">
-            <div class="flex items-center gap-2" :class="password.length >= 8 ? 'text-green-500' : ''">
-                <svg class="w-3.5 h-3.5" :class="password.length >= 8 ? 'text-green-500' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
+
+        {{-- Angka --}}
+        <div class="flex items-center gap-3">
+            <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
+                 :class="/[0-9]/.test(password) ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
+                <svg x-show="/[0-9]/.test(password)" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
-                <span>Minimal 8 karakter</span>
             </div>
-            <div class="flex items-center gap-2" :class="/[A-Z]/.test(password) ? 'text-green-500' : ''">
-                <svg class="w-3.5 h-3.5" :class="/[A-Z]/.test(password) ? 'text-green-500' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
+            <span class="text-sm transition-colors" :class="/[0-9]/.test(password) ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Angka (0-9)</span>
+        </div>
+
+        {{-- Karakter spesial --}}
+        <div class="flex items-center gap-3">
+            <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
+                 :class="/[!?<>@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]/.test(password) ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
+                <svg x-show="/[!?<>@#$%^&*()_+\-=\[\]{};':&quot;\\|,.<>\/?]/.test(password)" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
-                <span>Huruf besar (A-Z)</span>
             </div>
-            <div class="flex items-center gap-2" :class="/[a-z]/.test(password) ? 'text-green-500' : ''">
-                <svg class="w-3.5 h-3.5" :class="/[a-z]/.test(password) ? 'text-green-500' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
+            <span class="text-sm transition-colors" :class="/[!?<>@#$%^&*()_+\-=\[\]{};':&quot;\\|,.<>\/?]/.test(password) ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Karakter spesial (misal: !?&lt;&gt;@#$%)</span>
+        </div>
+
+        {{-- Minimal 8 karakter --}}
+        <div class="flex items-center gap-3">
+            <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
+                 :class="password.length >= 8 ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
+                <svg x-show="password.length >= 8" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
-                <span>Huruf kecil (a-z)</span>
             </div>
-            <div class="flex items-center gap-2" :class="/[0-9]/.test(password) ? 'text-green-500' : ''">
-                <svg class="w-3.5 h-3.5" :class="/[0-9]/.test(password) ? 'text-green-500' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
-                <span>Angka (0-9)</span>
-            </div>
-            <div class="flex items-center gap-2" :class="/[^a-zA-Z0-9]/.test(password) ? 'text-green-500' : ''">
-                <svg class="w-3.5 h-3.5" :class="/[^a-zA-Z0-9]/.test(password) ? 'text-green-500' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
-                <span>Karakter spesial (!@#$%)</span>
-            </div>
+            <span class="text-sm transition-colors" :class="password.length >= 8 ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Minimal 8 karakter</span>
         </div>
     </div>
     @endif
