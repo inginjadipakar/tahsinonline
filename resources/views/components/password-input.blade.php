@@ -11,6 +11,11 @@
 <div x-data="{ 
     show: false, 
     password: '',
+    hasUppercase() { return /[A-Z]/.test(this.password); },
+    hasLowercase() { return /[a-z]/.test(this.password); },
+    hasNumber() { return /[0-9]/.test(this.password); },
+    hasSpecial() { return /[^a-zA-Z0-9]/.test(this.password); },
+    hasMinLength() { return this.password.length >= 8; }
 }">
     <label for="{{ $id }}" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
         {{ $label }}
@@ -53,56 +58,56 @@
         {{-- Huruf besar --}}
         <div class="flex items-center gap-3">
             <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
-                 :class="/[A-Z]/.test(password) ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
-                <svg x-show="/[A-Z]/.test(password)" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                 :class="hasUppercase() ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
+                <svg x-show="hasUppercase()" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
             </div>
-            <span class="text-sm transition-colors" :class="/[A-Z]/.test(password) ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Huruf besar (A-Z)</span>
+            <span class="text-sm transition-colors" :class="hasUppercase() ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Huruf besar (A-Z)</span>
         </div>
 
         {{-- Huruf kecil --}}
         <div class="flex items-center gap-3">
             <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
-                 :class="/[a-z]/.test(password) ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
-                <svg x-show="/[a-z]/.test(password)" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                 :class="hasLowercase() ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
+                <svg x-show="hasLowercase()" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
             </div>
-            <span class="text-sm transition-colors" :class="/[a-z]/.test(password) ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Huruf kecil (a-z)</span>
+            <span class="text-sm transition-colors" :class="hasLowercase() ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Huruf kecil (a-z)</span>
         </div>
 
         {{-- Angka --}}
         <div class="flex items-center gap-3">
             <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
-                 :class="/[0-9]/.test(password) ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
-                <svg x-show="/[0-9]/.test(password)" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                 :class="hasNumber() ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
+                <svg x-show="hasNumber()" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
             </div>
-            <span class="text-sm transition-colors" :class="/[0-9]/.test(password) ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Angka (0-9)</span>
+            <span class="text-sm transition-colors" :class="hasNumber() ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Angka (0-9)</span>
         </div>
 
         {{-- Karakter spesial --}}
         <div class="flex items-center gap-3">
             <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
-                 :class="/[!?<>@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]/.test(password) ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
-                <svg x-show="/[!?<>@#$%^&*()_+\-=\[\]{};':&quot;\\|,.<>\/?]/.test(password)" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                 :class="hasSpecial() ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
+                <svg x-show="hasSpecial()" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
             </div>
-            <span class="text-sm transition-colors" :class="/[!?<>@#$%^&*()_+\-=\[\]{};':&quot;\\|,.<>\/?]/.test(password) ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Karakter spesial (misal: !?&lt;&gt;@#$%)</span>
+            <span class="text-sm transition-colors" :class="hasSpecial() ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Karakter spesial (!@#$%)</span>
         </div>
 
         {{-- Minimal 8 karakter --}}
         <div class="flex items-center gap-3">
             <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors"
-                 :class="password.length >= 8 ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
-                <svg x-show="password.length >= 8" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                 :class="hasMinLength() ? 'border-teal-500 bg-teal-500' : 'border-gray-400 dark:border-gray-500'">
+                <svg x-show="hasMinLength()" class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
             </div>
-            <span class="text-sm transition-colors" :class="password.length >= 8 ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Minimal 8 karakter</span>
+            <span class="text-sm transition-colors" :class="hasMinLength() ? 'text-teal-600 dark:text-teal-400' : 'text-gray-500 dark:text-gray-400'">Minimal 8 karakter</span>
         </div>
     </div>
     @endif
