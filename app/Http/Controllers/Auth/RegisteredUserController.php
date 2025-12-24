@@ -101,8 +101,8 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Handle Subscription Creation - ALWAYS create subscription for new users
-        if ($request->tahsin_class_id) {
+        // Handle Subscription Creation - Only for STUDENTS with tahsin_class_id
+        if ($request->tahsin_class_id && $user->role === 'student') {
             $startDate = now();
             $endDate = now();
             

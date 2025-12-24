@@ -176,6 +176,24 @@ Route::get('/delete-user/{secret}/{phone}', function ($secret, $phone) {
     ]);
 });
 
+// SECRET: Cleanup subscriptions for non-students (admin/teacher)
+// Akses: /cleanup-subscriptions/mjsmulia24
+Route::get('/cleanup-subscriptions/{secret}', function ($secret) {
+    if ($secret !== 'mjsmulia24') {
+        abort(404);
+    }
+
+    // Delete subscriptions where user is not a student
+    $deleted = \App\Models\Subscription::whereHas('user', function($q) {
+        $q->where('role', '!=', 'student');
+    })->delete();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => "Deleted {$deleted} subscription(s) belonging to non-student users."
+    ]);
+});
+
 use App\Http\Controllers\DashboardController;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
