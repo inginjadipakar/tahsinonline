@@ -32,7 +32,13 @@ class SubscriptionController extends Controller
         $subscriptions = $query->paginate(15)->withQueryString();
         $teachers = User::where('role', 'teacher')->orderBy('name')->get();
 
-        return view('admin.subscriptions.index', compact('subscriptions', 'teachers'));
+        // Statistics for dashboard
+        $totalSiswa = Subscription::distinct('user_id')->count();
+        $activeCount = Subscription::where('status', 'active')->count();
+        $pendingCount = Subscription::where('status', 'pending')->count();
+        $noTeacherCount = Subscription::where('status', 'active')->whereNull('assigned_teacher_id')->count();
+
+        return view('admin.subscriptions.index', compact('subscriptions', 'teachers', 'totalSiswa', 'activeCount', 'pendingCount', 'noTeacherCount'));
     }
 
     /**
