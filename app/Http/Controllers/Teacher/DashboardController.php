@@ -36,10 +36,25 @@ class DashboardController extends Controller
             session(['selected_class_id' => $assignedClass->id]);
         }
 
+        // Check if teacher is globally assigned to this class
+        $isGlobalTeacher = $teacherClasses->where('id', $assignedClass->id)->first()->pivot ?? false; 
+        // Note: Pivot check might be tricky if getTeacherClasses returned from Subscription query (no pivot).
+        // Better check:
+        $isDirectlyAssigned = $teacher->assignedClasses->contains('id', $assignedClass->id) || $teacher->assigned_class_id == $assignedClass->id;
+
         // Get students in the assigned class
-        $students = \App\Models\User::where('tahsin_class_id', $assignedClass->id)
-            ->where('role', 'student')
-            ->get();
+        $studentsQuery = \App\Models\User::where('tahsin_class_id', $assignedClass->id)
+            ->where('role', 'student');
+            
+        // If not a global teacher for this class, restrict to assigned students only
+        if (!$isDirectlyAssigned) {
+            $studentsQuery->whereHas('subscriptions', function($q) use ($teacher) {
+                $q->where('assigned_teacher_id', $teacher->id)
+                  ->whereIn('status', ['active', 'pending']);
+            });
+        }
+        
+        $students = $studentsQuery->get();
 
         // Get total materials for THIS CLASS
         // If lessons are strictly tied to class, use $assignedClass->lessons()

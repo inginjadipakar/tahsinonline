@@ -121,21 +121,32 @@ class User extends Authenticatable
      */
     public function getTeacherClasses(): \Illuminate\Support\Collection
     {
-        // Priority: pivot table (with count check to avoid executing query if not loaded/needed, 
-        // but for safety we should just load it or check count)
-        // If we want to return a collection of models:
-        $classes = $this->assignedClasses;
+        $classes = collect();
 
-        if ($classes->isNotEmpty()) {
-            return $classes;
+        // 1. Pivot Table (Many-to-Many)
+        if ($this->assignedClasses->isNotEmpty()) {
+            $classes = $classes->merge($this->assignedClasses);
         }
 
-        // Fallback: assigned_class_id
+        // 2. Direct Assignment (Legacy One-to-Many)
         if ($this->assigned_class_id && $this->assignedClass) {
-            return collect([$this->assignedClass]);
+            $classes->push($this->assignedClass);
+        }
+        
+        // 3. Subscription Assignments (Integration)
+        // If teacher is assigned to a student via subscription, they should access that class
+        $subscriptionClassIds = $this->teacherSubscriptions()
+            ->whereIn('status', ['active', 'pending'])
+            ->whereNotNull('tahsin_class_id')
+            ->pluck('tahsin_class_id')
+            ->unique();
+            
+        if ($subscriptionClassIds->isNotEmpty()) {
+             $subClasses = \App\Models\TahsinClass::whereIn('id', $subscriptionClassIds)->get();
+             $classes = $classes->merge($subClasses);
         }
 
-        return collect();
+        return $classes->unique('id')->values();
     }
 
     /**
