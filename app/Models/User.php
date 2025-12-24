@@ -144,4 +144,51 @@ class User extends Authenticatable
     {
         return $this->role === 'teacher';
     }
+
+    /**
+     * Get students assigned to this teacher (via subscriptions).
+     */
+    public function assignedStudents(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(
+            User::class,
+            Subscription::class,
+            'assigned_teacher_id', // Foreign key on subscriptions table
+            'id', // Foreign key on users table
+            'id', // Local key on users table (teacher)
+            'user_id' // Local key on subscriptions table
+        );
+    }
+
+    /**
+     * Get subscriptions where this teacher is assigned.
+     */
+    public function teacherSubscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Subscription::class, 'assigned_teacher_id');
+    }
+
+    /**
+     * Get evaluations given by this teacher.
+     */
+    public function givenEvaluations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StudentEvaluation::class, 'teacher_id');
+    }
+
+    /**
+     * Get evaluations received by this student.
+     */
+    public function receivedEvaluations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StudentEvaluation::class, 'student_id');
+    }
+
+    /**
+     * Scope for active teachers.
+     */
+    public function scopeActiveTeachers($query)
+    {
+        return $query->where('role', 'teacher');
+    }
 }

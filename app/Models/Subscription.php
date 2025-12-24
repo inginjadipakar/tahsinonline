@@ -9,6 +9,7 @@ class Subscription extends Model
     protected $fillable = [
         'user_id',
         'tahsin_class_id',
+        'assigned_teacher_id',
         'program_type',
         'start_date',
         'end_date',
@@ -21,7 +22,7 @@ class Subscription extends Model
     ];
 
     /**
-     * Get the user that owns the subscription.
+     * Get the user (student) that owns the subscription.
      */
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -34,5 +35,38 @@ class Subscription extends Model
     public function tahsinClass(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(TahsinClass::class);
+    }
+
+    /**
+     * Get the assigned teacher for this subscription.
+     */
+    public function assignedTeacher(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_teacher_id');
+    }
+
+    /**
+     * Get the evaluations for this subscription.
+     */
+    public function evaluations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StudentEvaluation::class);
+    }
+
+    /**
+     * Scope to get subscriptions that need teacher assignment.
+     */
+    public function scopeNeedsTeacher($query)
+    {
+        return $query->whereNull('assigned_teacher_id')
+                     ->whereIn('status', ['active', 'pending']);
+    }
+
+    /**
+     * Scope to get subscriptions for a specific teacher.
+     */
+    public function scopeForTeacher($query, $teacherId)
+    {
+        return $query->where('assigned_teacher_id', $teacherId);
     }
 }

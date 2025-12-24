@@ -242,6 +242,12 @@ Route::middleware(['auth', AdminOnly::class])->prefix('admin')->name('admin.')->
     })->name('dashboard');
 
     Route::resource('subscriptions', AdminSubscriptionController::class);
+    
+    // Teacher Assignment for Subscriptions
+    Route::patch('subscriptions/{subscription}/assign-teacher', [AdminSubscriptionController::class, 'assignTeacher'])->name('subscriptions.assign-teacher');
+    Route::delete('subscriptions/{subscription}/unassign-teacher', [AdminSubscriptionController::class, 'unassignTeacher'])->name('subscriptions.unassign-teacher');
+    Route::get('subscriptions/{subscription}/suggest-teachers', [AdminSubscriptionController::class, 'suggestTeachers'])->name('subscriptions.suggest-teachers');
+    
     Route::resource('tahsin-classes', \App\Http\Controllers\Admin\TahsinClassController::class);
     Route::resource('lessons', \App\Http\Controllers\Admin\LessonController::class);
 

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Subscription;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
@@ -10,10 +12,23 @@ class SubscriptionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $subscriptions = \App\Models\Subscription::with('user')->latest()->paginate(10);
-        return view('admin.subscriptions.index', compact('subscriptions'));
+        $query = Subscription::with(['user', 'tahsinClass', 'assignedTeacher'])->latest();
+
+        // Apply filters
+        if ($request->filter === 'no_teacher') {
+            $query->whereNull('assigned_teacher_id');
+        } elseif ($request->filter === 'active') {
+            $query->where('status', 'active');
+        } elseif ($request->filter === 'pending') {
+            $query->where('status', 'pending');
+        }
+
+        $subscriptions = $query->paginate(15)->withQueryString();
+        $teachers = User::where('role', 'teacher')->orderBy('name')->get();
+
+        return view('admin.subscriptions.index', compact('subscriptions', 'teachers'));
     }
 
     /**
@@ -21,8 +36,9 @@ class SubscriptionController extends Controller
      */
     public function create()
     {
-        $users = \App\Models\User::where('role', 'student')->get();
-        return view('admin.subscriptions.create', compact('users'));
+        $users = User::where('role', 'student')->get();
+        $teachers = User::where('role', 'teacher')->get();
+        return view('admin.subscriptions.create', compact('users', 'teachers'));
     }
 
     /**
@@ -32,14 +48,16 @@ class SubscriptionController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
+            'tahsin_class_id' => 'nullable|exists:tahsin_classes,id',
+            'assigned_teacher_id' => 'nullable|exists:users,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'status' => 'required|in:active,expired,pending',
         ]);
 
-        \App\Models\Subscription::create($validated);
+        Subscription::create($validated);
 
-        return redirect()->route('admin.subscriptions.index')->with('success', 'Subscription created successfully.');
+        return redirect()->route('admin.subscriptions.index')->with('success', 'Subscription berhasil dibuat.');
     }
 
     /**
@@ -47,9 +65,10 @@ class SubscriptionController extends Controller
      */
     public function edit(string $id)
     {
-        $subscription = \App\Models\Subscription::findOrFail($id);
-        $users = \App\Models\User::where('role', 'student')->get();
-        return view('admin.subscriptions.edit', compact('subscription', 'users'));
+        $subscription = Subscription::findOrFail($id);
+        $users = User::where('role', 'student')->get();
+        $teachers = User::where('role', 'teacher')->get();
+        return view('admin.subscriptions.edit', compact('subscription', 'users', 'teachers'));
     }
 
     /**
@@ -59,15 +78,17 @@ class SubscriptionController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
+            'tahsin_class_id' => 'nullable|exists:tahsin_classes,id',
+            'assigned_teacher_id' => 'nullable|exists:users,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'status' => 'required|in:active,expired,pending',
         ]);
 
-        $subscription = \App\Models\Subscription::findOrFail($id);
+        $subscription = Subscription::findOrFail($id);
         $subscription->update($validated);
 
-        return redirect()->route('admin.subscriptions.index')->with('success', 'Subscription updated successfully.');
+        return redirect()->route('admin.subscriptions.index')->with('success', 'Subscription berhasil diupdate.');
     }
 
     /**
@@ -75,9 +96,81 @@ class SubscriptionController extends Controller
      */
     public function destroy(string $id)
     {
-        $subscription = \App\Models\Subscription::findOrFail($id);
+        $subscription = Subscription::findOrFail($id);
         $subscription->delete();
 
-        return redirect()->route('admin.subscriptions.index')->with('success', 'Subscription deleted successfully.');
+        return redirect()->route('admin.subscriptions.index')->with('success', 'Subscription berhasil dihapus.');
+    }
+
+    /**
+     * Assign a teacher to a subscription.
+     */
+    public function assignTeacher(Request $request, Subscription $subscription)
+    {
+        $request->validate([
+            'assigned_teacher_id' => 'required|exists:users,id',
+        ]);
+
+        $teacher = User::findOrFail($request->assigned_teacher_id);
+        
+        if ($teacher->role !== 'teacher') {
+            return back()->with('error', 'User yang dipilih bukan guru.');
+        }
+
+        $subscription->update([
+            'assigned_teacher_id' => $request->assigned_teacher_id,
+        ]);
+
+        return redirect()->route('admin.subscriptions.index')
+            ->with('success', "Guru {$teacher->name} berhasil di-assign ke siswa {$subscription->user->name}.");
+    }
+
+    /**
+     * Remove teacher assignment from a subscription.
+     */
+    public function unassignTeacher(Subscription $subscription)
+    {
+        $teacherName = $subscription->assignedTeacher?->name ?? 'Guru';
+        
+        $subscription->update([
+            'assigned_teacher_id' => null,
+        ]);
+
+        return redirect()->route('admin.subscriptions.index')
+            ->with('success', "{$teacherName} berhasil di-unassign dari siswa {$subscription->user->name}.");
+    }
+
+    /**
+     * Get suggested teachers for a subscription (API).
+     */
+    public function suggestTeachers(Subscription $subscription)
+    {
+        $class = $subscription->tahsinClass;
+        $student = $subscription->user;
+        
+        $query = User::where('role', 'teacher');
+
+        // 1. Prioritize teachers who already teach this class
+        if ($class) {
+            $query->whereHas('assignedClasses', function ($q) use ($class) {
+                $q->where('tahsin_class_id', $class->id);
+            });
+        }
+
+        // 2. Filter by gender for private adult classes
+        if ($class && str_contains(strtolower($class->name), 'privat') && $student && $student->age >= 12) {
+            $query->where('gender', $student->gender);
+        }
+
+        // 3. Order by least students assigned
+        $query->withCount([
+            'teacherSubscriptions as current_students_count' => function ($q) {
+                $q->whereIn('status', ['active', 'pending']);
+            }
+        ])->orderBy('current_students_count');
+
+        return response()->json([
+            'suggestions' => $query->take(5)->get(['id', 'name', 'gender']),
+        ]);
     }
 }
