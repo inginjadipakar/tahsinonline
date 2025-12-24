@@ -128,8 +128,12 @@
                                                 'student' => 'bg-islamic-emerald/10 text-islamic-emerald',
                                             ];
                                         @endphp
-                                        <div class="w-10 h-10 rounded-full {{ $colors[$user->role] ?? 'bg-gray-100 text-gray-700' }} flex items-center justify-center font-bold">
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                                        <div class="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden {{ $colors[$user->role] ?? 'bg-gray-100 text-gray-700' }} flex items-center justify-center font-bold">
+                                            @if($user->profile_photo_path)
+                                                <img src="{{ asset('storage/' . $user->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                            @else
+                                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                                            @endif
                                         </div>
                                         <div>
                                             <p class="font-semibold text-gray-900">{{ $user->name }}</p>

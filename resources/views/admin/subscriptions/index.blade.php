@@ -96,8 +96,12 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
-                                            <div class="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-sm">
-                                                {{ substr($subscription->user->name, 0, 1) }}
+                                            <div class="h-10 w-10 rounded-full flex-shrink-0 overflow-hidden bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-sm">
+                                                @if($subscription->user->profile_photo_path)
+                                                    <img src="{{ asset('storage/' . $subscription->user->profile_photo_path) }}" alt="{{ $subscription->user->name }}" class="w-full h-full object-cover">
+                                                @else
+                                                    {{ substr($subscription->user->name, 0, 1) }}
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="ml-4">
@@ -113,8 +117,12 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($subscription->assignedTeacher)
                                         <div class="flex items-center gap-3">
-                                            <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs ring-2 ring-white">
-                                                {{ substr($subscription->assignedTeacher->name, 0, 1) }}
+                                            <div class="h-8 w-8 rounded-full flex-shrink-0 overflow-hidden bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs ring-2 ring-white">
+                                                @if($subscription->assignedTeacher->profile_photo_path)
+                                                    <img src="{{ asset('storage/' . $subscription->assignedTeacher->profile_photo_path) }}" alt="{{ $subscription->assignedTeacher->name }}" class="w-full h-full object-cover">
+                                                @else
+                                                    {{ substr($subscription->assignedTeacher->name, 0, 1) }}
+                                                @endif
                                             </div>
                                             <span class="text-sm text-gray-700 font-medium">{{ $subscription->assignedTeacher->name }}</span>
                                         </div>
