@@ -32,6 +32,11 @@ class TahsinClass extends Model
     {
         return $this->hasMany(ClassSchedule::class);
     }
+
+    public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
     
     public function activeSchedules(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

@@ -250,6 +250,7 @@ Route::middleware(['auth', AdminOnly::class])->prefix('admin')->name('admin.')->
     
     Route::resource('tahsin-classes', \App\Http\Controllers\Admin\TahsinClassController::class);
     Route::resource('lessons', \App\Http\Controllers\Admin\LessonController::class);
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
 
     // Class Schedule Management
     Route::resource('schedules', \App\Http\Controllers\Admin\ClassScheduleController::class);

@@ -10,7 +10,7 @@ class TahsinClassController extends Controller
 {
     public function index()
     {
-        $classes = TahsinClass::withCount('lessons')->orderBy('order')->paginate(10);
+        $classes = TahsinClass::withCount(['lessons', 'subscriptions'])->orderBy('order')->paginate(10);
         return view('admin.tahsin-classes.index', compact('classes'));
     }
 

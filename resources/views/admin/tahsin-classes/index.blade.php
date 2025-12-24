@@ -99,7 +99,7 @@
                                 <th class="px-6 py-3">Kelas</th>
                                 <th class="px-6 py-3">Harga</th>
                                 <th class="px-6 py-3">Materi</th>
-                                <th class="px-6 py-3">Urutan</th>
+                                <th class="px-6 py-3">Peserta</th>
                                 <th class="px-6 py-3">Status</th>
                                 <th class="px-6 py-3 text-right">Aksi</th>
                             </tr>
@@ -115,7 +115,7 @@
                                             </svg>
                                         </div>
                                         <div class="min-w-0">
-                                            <p class="font-semibold text-gray-900 truncate">{{ $class->name }}</p>
+                                            <a href="{{ route('admin.tahsin-classes.show', $class) }}" class="font-semibold text-gray-900 hover:text-islamic-emerald truncate block">{{ $class->name }}</a>
                                             <p class="text-xs text-gray-500 truncate max-w-xs">{{ Str::limit($class->description, 50) }}</p>
                                         </div>
                                     </div>
@@ -125,17 +125,20 @@
                                     <span class="text-xs text-gray-500">/bulan</span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center gap-1.5">
-                                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <a href="{{ route('admin.lessons.index', ['tahsin_class_id' => $class->id]) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-medium rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
                                         </svg>
-                                        <span class="text-gray-700">{{ $class->lessons_count }} materi</span>
-                                    </div>
+                                        {{ $class->lessons_count }} materi
+                                    </a>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-700 text-sm font-medium">
-                                        {{ $class->order }}
-                                    </span>
+                                    <a href="{{ route('admin.subscriptions.index', ['tahsin_class_id' => $class->id]) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-medium rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        {{ $class->subscriptions_count ?? 0 }} peserta
+                                    </a>
                                 </td>
                                 <td class="px-6 py-4">
                                     @if($class->is_active)

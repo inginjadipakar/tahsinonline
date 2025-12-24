@@ -17,6 +17,10 @@ class SubscriptionController extends Controller
         $query = Subscription::with(['user', 'tahsinClass', 'assignedTeacher'])->latest();
 
         // Apply filters
+        if ($request->tahsin_class_id) {
+            $query->where('tahsin_class_id', $request->tahsin_class_id);
+        }
+        
         if ($request->filter === 'no_teacher') {
             $query->whereNull('assigned_teacher_id');
         } elseif ($request->filter === 'active') {
