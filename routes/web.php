@@ -288,9 +288,18 @@ Route::middleware(['auth', TeacherOnly::class])->prefix('teacher')->name('teache
     Route::resource('lessons', TeacherLessonController::class);
     Route::get('lessons/{lesson}/download', [TeacherLessonController::class, 'download'])->name('lessons.download');
 
-    // Student Progress
+    // Student Progress (Legacy)
     Route::get('/students', [TeacherStudentProgressController::class, 'index'])->name('students.index');
     Route::get('/students/{student}/progress', [TeacherStudentProgressController::class, 'show'])->name('students.show');
+
+    // My Students (New - Assigned Students)
+    Route::get('/my-students', [\App\Http\Controllers\Teacher\MyStudentsController::class, 'index'])->name('my-students.index');
+    Route::get('/my-students/{subscription}', [\App\Http\Controllers\Teacher\MyStudentsController::class, 'show'])->name('my-students.show');
+    Route::post('/my-students/{subscription}/attendance', [\App\Http\Controllers\Teacher\MyStudentsController::class, 'storeAttendance'])->name('my-students.attendance');
+    Route::post('/my-students/{subscription}/evaluation', [\App\Http\Controllers\Teacher\MyStudentsController::class, 'storeEvaluation'])->name('my-students.evaluation');
+    Route::post('/my-students/{subscription}/unlock', [\App\Http\Controllers\Teacher\MyStudentsController::class, 'unlockLesson'])->name('my-students.unlock');
+    Route::post('/my-students/batch-unlock', [\App\Http\Controllers\Teacher\MyStudentsController::class, 'batchUnlock'])->name('my-students.batch-unlock');
+    Route::get('/pending-unlocks', [\App\Http\Controllers\Teacher\MyStudentsController::class, 'pendingUnlocks'])->name('pending-unlocks');
 });
 
 // Storage file serving for Railway (fallback when storage:link doesn't work)
