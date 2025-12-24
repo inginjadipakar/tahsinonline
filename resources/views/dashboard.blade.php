@@ -3,9 +3,12 @@
     $user = auth()->user();
     $subscription = $user->subscription;
     $hasActiveSubscription = $subscription && $subscription->status === 'active';
-    $daysLeft = $hasActiveSubscription ? now()->diffInDays($subscription->end_date, false) : 0;
+    $daysLeft = $hasActiveSubscription ? max(0, floor(now()->floatDiffInDays($subscription->end_date, false))) : 0;
     $isExpiringSoon = $hasActiveSubscription && $daysLeft > 0 && $daysLeft <= 7;
     $isExpired = $subscription && $daysLeft <= 0;
+    
+    // Get assigned teacher
+    $assignedTeacher = $subscription?->assignedTeacher;
 @endphp
 
 <x-app-layout>

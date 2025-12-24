@@ -12,8 +12,12 @@ class MyClassController extends Controller
     {
         $user = $request->user();
         
-        // Check subscription
+        // Check subscription and load assigned teacher
         $subscription = $user->subscription;
+        if ($subscription) {
+            $subscription->load('assignedTeacher');
+        }
+        
         if (!$subscription || $subscription->status !== 'active') {
             return redirect()->route('student.subscription.index')
                 ->with('error', 'Anda perlu berlangganan untuk mengakses kelas.');
