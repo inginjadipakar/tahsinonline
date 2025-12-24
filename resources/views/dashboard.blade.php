@@ -248,7 +248,7 @@
                             <p class="font-medium text-gray-900 text-sm">Langganan</p>
                         </a>
                         
-                        <a href="{{ route('student.payments.index') }}" 
+                        <a href="{{ route('payments.index') }}" 
                            class="group flex flex-col items-center p-6 bg-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all text-center">
                             <div class="w-12 h-12 bg-purple-100 group-hover:bg-purple-200 rounded-xl flex items-center justify-center mb-3 transition-colors">
                                 <svg class="w-6 h-6 text-purple-600" viewBox="0 0 256 256" fill="currentColor">
