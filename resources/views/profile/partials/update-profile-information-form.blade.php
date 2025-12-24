@@ -9,9 +9,62 @@
         </p>
     </header>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
+
+        {{-- Profile Photo --}}
+        <div x-data="{ photoName: null, photoPreview: null }" class="flex items-center gap-6 mb-6">
+            <!-- Profile Photo File Input -->
+            <input type="file" id="photo" class="hidden"
+                   name="photo"
+                   x-ref="photo"
+                   accept="image/*"
+                   x-on:change="
+                        photoName = $refs.photo.files[0].name;
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            photoPreview = e.target.result;
+                        };
+                        reader.readAsDataURL($refs.photo.files[0]);
+                   " />
+
+            <!-- Current Profile Photo -->
+            <div class="relative group cursor-pointer" x-on:click.prevent="$refs.photo.click()">
+                <div x-show="!photoPreview" class="h-24 w-24 rounded-full overflow-hidden border-2 border-gray-200 group-hover:border-emerald-500 transition-colors">
+                    @if($user->profile_photo_path)
+                        <img src="{{ asset('storage/' . $user->profile_photo_path) }}" alt="{{ $user->name }}" class="h-full w-full object-cover">
+                    @else
+                        <div class="h-full w-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-3xl font-bold">
+                            {{ substr($user->name, 0, 1) }}
+                        </div>
+                    @endif
+                </div>
+
+                <!-- New Profile Photo Preview -->
+                <div x-show="photoPreview" style="display: none;" class="h-24 w-24 rounded-full overflow-hidden border-2 border-emerald-500">
+                    <span class="block h-full w-full bg-cover bg-no-repeat bg-center"
+                          x-bind:style="'background-image: url(\'' + photoPreview + '\');'">
+                    </span>
+                </div>
+                
+                <!-- Overlay on Hover -->
+                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-full transition-all flex items-center justify-center">
+                    <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="flex-1">
+                <h3 class="text-lg font-bold text-gray-900">{{ $user->name }}</h3>
+                <button type="button" class="text-sm font-semibold text-emerald-600 hover:text-emerald-500 focus:outline-none" x-on:click.prevent="$refs.photo.click()">
+                    {{ __('Ubah Foto Profil') }}
+                </button>
+                <x-input-error class="mt-2" :messages="$errors->get('photo')" />
+            </div>
+        </div>
 
         {{-- Nama Lengkap --}}
         <div>

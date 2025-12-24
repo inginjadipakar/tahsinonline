@@ -31,6 +31,7 @@ class User extends Authenticatable
         'is_child_account',
         'parent_name',
         'child_name',
+        'profile_photo_path',
     ];
 
     /**

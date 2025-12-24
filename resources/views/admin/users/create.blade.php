@@ -13,13 +13,40 @@
     <div class="py-6">
         <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <form action="{{ route('admin.users.store') }}" method="POST">
+                <form action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data" x-data="{ name: '{{ old('name') }}', photoPreview: null }">
                     @csrf
                     
                     <div class="space-y-4">
+                        {{-- Photo Upload --}}
+                        <div class="flex items-center gap-6 mb-6">
+                            <input type="file" id="photo" class="hidden" name="photo" x-ref="photo" accept="image/*"
+                                x-on:change="
+                                    const reader = new FileReader();
+                                    reader.onload = (e) => { photoPreview = e.target.result; };
+                                    reader.readAsDataURL($refs.photo.files[0]);
+                                " />
+
+                            <div class="relative group cursor-pointer" x-on:click.prevent="$refs.photo.click()">
+                                <div x-show="!photoPreview" class="h-20 w-20 rounded-full overflow-hidden border-2 border-gray-200 group-hover:border-emerald-500 transition-colors bg-gray-50 flex items-center justify-center">
+                                    <span class="text-xl font-bold text-gray-400 uppercase" x-text="name ? name.charAt(0) : '?'"></span>
+                                </div>
+                                <div x-show="photoPreview" style="display: none;" class="h-20 w-20 rounded-full overflow-hidden border-2 border-emerald-500">
+                                    <span class="block h-full w-full bg-cover bg-no-repeat bg-center" x-bind:style="'background-image: url(\'' + photoPreview + '\');'"></span>
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-full transition-all flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Foto Profil</h3>
+                                <button type="button" class="text-xs font-semibold text-emerald-600 hover:text-emerald-500" x-on:click.prevent="$refs.photo.click()">Upload Foto</button>
+                                @error('photo')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                            </div>
+                        </div>
+
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                            <input type="text" name="name" value="{{ old('name') }}" required class="w-full border-gray-300 rounded-lg focus:ring-islamic-emerald focus:border-islamic-emerald">
+                            <input type="text" name="name" x-model="name" required class="w-full border-gray-300 rounded-lg focus:ring-islamic-emerald focus:border-islamic-emerald">
                             @error('name')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
                         </div>
 

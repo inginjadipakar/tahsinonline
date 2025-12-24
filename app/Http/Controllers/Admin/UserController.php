@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
 
 class UserController extends Controller
@@ -62,9 +63,14 @@ class UserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'in:admin,teacher,student'],
             'gender' => ['nullable', 'in:male,female'],
+            'photo' => ['nullable', 'image', 'max:1024'],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
+
+        if ($request->hasFile('photo')) {
+            $validated['profile_photo_path'] = $request->file('photo')->store('profile-photos', 'public');
+        }
 
         User::create($validated);
 
@@ -101,12 +107,20 @@ class UserController extends Controller
             'role' => ['required', 'in:admin,teacher,student'],
             'gender' => ['nullable', 'in:male,female'],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'photo' => ['nullable', 'image', 'max:1024'],
         ]);
 
         if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);
+        }
+
+        if ($request->hasFile('photo')) {
+            if ($user->profile_photo_path) {
+                Storage::disk('public')->delete($user->profile_photo_path);
+            }
+            $validated['profile_photo_path'] = $request->file('photo')->store('profile-photos', 'public');
         }
 
         $user->update($validated);
