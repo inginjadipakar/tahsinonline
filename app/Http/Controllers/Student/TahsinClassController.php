@@ -53,9 +53,13 @@ class TahsinClassController extends Controller
             return redirect()->route('dashboard')->with('error', 'Anda perlu langganan aktif untuk mengakses lesson.');
         }
 
-        $lesson->load('tahsinClass');
+        $lesson->load(['tahsinClass.lessons' => function($q) {
+            $q->orderBy('order');
+        }, 'tahsinClass.lessons.userProgress' => function($query) {
+            $query->where('user_id', auth()->id());
+        }]);
         
-        // Get or create user progress
+        // Get or create user progress for CURRENT lesson
         $progress = UserProgress::firstOrCreate(
             [
                 'user_id' => auth()->id(),
