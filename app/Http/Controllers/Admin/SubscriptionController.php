@@ -36,9 +36,8 @@ class SubscriptionController extends Controller
         $totalSiswa = Subscription::distinct('user_id')->count();
         $activeCount = Subscription::where('status', 'active')->count();
         $pendingCount = Subscription::where('status', 'pending')->count();
-        $noTeacherCount = Subscription::where('status', 'active')->whereNull('assigned_teacher_id')->count();
 
-        return view('admin.subscriptions.index', compact('subscriptions', 'teachers', 'totalSiswa', 'activeCount', 'pendingCount', 'noTeacherCount'));
+        return view('admin.subscriptions.index', compact('subscriptions', 'teachers', 'totalSiswa', 'activeCount', 'pendingCount'));
     }
 
     /**
