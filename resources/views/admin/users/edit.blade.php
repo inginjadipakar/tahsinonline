@@ -29,7 +29,10 @@
 
                             <div class="relative group cursor-pointer" x-on:click.prevent="$refs.photo.click()">
                                 <div x-show="!photoPreview" class="h-20 w-20 rounded-full overflow-hidden border-2 border-gray-200 group-hover:border-emerald-500 transition-colors bg-gray-50 flex items-center justify-center">
-                                    @if($user->profile_photo_path)
+                                    @php
+                                        $hasPhoto = !empty($user->profile_photo_path) && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->profile_photo_path);
+                                    @endphp
+                                    @if($hasPhoto)
                                         <img src="{{ asset('storage/' . $user->profile_photo_path) }}" alt="{{ $user->name }}" class="h-full w-full object-cover">
                                     @else
                                         <span class="text-xl font-bold text-gray-400 uppercase" x-text="name ? name.charAt(0) : '?'"></span>
