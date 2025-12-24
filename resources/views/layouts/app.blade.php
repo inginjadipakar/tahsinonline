@@ -129,6 +129,11 @@
                                     <svg class="w-5 h-5 {{ request()->routeIs('admin.schedules.*') ? 'text-red-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                     <span>Jadwal Kelas</span>
                                 </a>
+                                
+                                <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl {{ request()->routeIs('admin.reports.*') ? 'text-red-600 font-bold bg-red-50' : 'text-gray-500 hover:text-gray-900' }} transition-all">
+                                    <svg class="w-5 h-5 {{ request()->routeIs('admin.reports.*') ? 'text-red-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    <span>Laporan</span>
+                                </a>
                             @endif
                         </div>
                     </div>
