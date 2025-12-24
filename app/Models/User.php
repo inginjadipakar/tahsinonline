@@ -58,11 +58,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the subscription associated with the user.
+     * Get the subscriptions associated with the user.
+     */
+    public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Get the latest/primary subscription associated with the user (Backward Compatibility).
      */
     public function subscription(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(Subscription::class);
+        return $this->hasOne(Subscription::class)->latestOfMany();
     }
 
     /**
