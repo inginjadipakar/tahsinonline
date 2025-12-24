@@ -14,21 +14,25 @@ class ReportController extends Controller
 {
     public function index()
     {
-        // --- Statistik Peserta ---
+        // --- Statistik Peserta (Berbasis Subscription) ---
+        // User requested: "jadikan subscription sebagai acuan"
+        // Hanya menghitung siswa yang memiliki history subscription (user_id di tabel subscriptions)
+        $studentQuery = User::where('role', 'student')->whereHas('subscriptions');
+
         $totalUsers = User::count();
-        $totalStudents = User::where('role', 'student')->count();
+        $totalStudents = $studentQuery->count(); // Matches SubscriptionController::distinct('user_id')
         $totalTeachers = User::where('role', 'teacher')->count();
         
-        // Gender Distribution (Students)
-        $studentGender = User::where('role', 'student')
+        // Gender Distribution (Subscribed Students only)
+        $studentGender = (clone $studentQuery)
             ->select('gender', DB::raw('count(*) as total'))
             ->groupBy('gender')
             ->pluck('total', 'gender')
             ->toArray();
             
-        // Age Distribution (Students)
+        // Age Distribution (Subscribed Students only)
         // Simple grouping: Anak (<12), Remaja (12-18), Dewasa (>18)
-        $studentAge = User::where('role', 'student')
+        $studentAge = (clone $studentQuery)
             ->get()
             ->groupBy(function($user) {
                 if (!$user->age) return 'Tidak Diketahui';
