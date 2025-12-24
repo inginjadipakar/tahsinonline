@@ -97,8 +97,12 @@
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
                                             <div class="h-10 w-10 rounded-full flex-shrink-0 overflow-hidden bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-sm">
-                                                @if($subscription->user->profile_photo_path)
-                                                    <img src="{{ asset('storage/' . $subscription->user->profile_photo_path) }}" alt="{{ $subscription->user->name }}" class="w-full h-full object-cover">
+                                                @php
+                                                    $studentPhoto = $subscription->user->profile_photo_path;
+                                                    $hasStudentPhoto = !empty($studentPhoto) && \Illuminate\Support\Facades\Storage::disk('public')->exists($studentPhoto);
+                                                @endphp
+                                                @if($hasStudentPhoto)
+                                                    <img src="{{ asset('storage/' . $studentPhoto) }}" alt="{{ $subscription->user->name }}" class="w-full h-full object-cover">
                                                 @else
                                                     {{ substr($subscription->user->name, 0, 1) }}
                                                 @endif
@@ -118,8 +122,12 @@
                                     @if($subscription->assignedTeacher)
                                         <div class="flex items-center gap-3">
                                             <div class="h-8 w-8 rounded-full flex-shrink-0 overflow-hidden bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs ring-2 ring-white">
-                                                @if($subscription->assignedTeacher->profile_photo_path)
-                                                    <img src="{{ asset('storage/' . $subscription->assignedTeacher->profile_photo_path) }}" alt="{{ $subscription->assignedTeacher->name }}" class="w-full h-full object-cover">
+                                                @php
+                                                    $teacherPhoto = $subscription->assignedTeacher->profile_photo_path;
+                                                    $hasTeacherPhoto = !empty($teacherPhoto) && \Illuminate\Support\Facades\Storage::disk('public')->exists($teacherPhoto);
+                                                @endphp
+                                                @if($hasTeacherPhoto)
+                                                    <img src="{{ asset('storage/' . $teacherPhoto) }}" alt="{{ $subscription->assignedTeacher->name }}" class="w-full h-full object-cover">
                                                 @else
                                                     {{ substr($subscription->assignedTeacher->name, 0, 1) }}
                                                 @endif

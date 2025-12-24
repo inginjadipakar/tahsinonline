@@ -173,8 +173,12 @@
                 <div class="p-6 border-t border-gray-100">
                     <div class="flex items-center gap-3 p-3 rounded-2xl bg-gray-50">
                         <div class="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden bg-red-100 flex items-center justify-center text-red-600 font-bold">
-                            @if(auth()->user()->profile_photo_path)
-                                <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
+                            @php
+                                $photoPath = auth()->user()->profile_photo_path;
+                                $hasPhoto = !empty($photoPath) && \Illuminate\Support\Facades\Storage::disk('public')->exists($photoPath);
+                            @endphp
+                            @if($hasPhoto)
+                                <img src="{{ asset('storage/' . $photoPath) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
                             @else
                                 {{ substr(auth()->user()->name, 0, 1) }}
                             @endif

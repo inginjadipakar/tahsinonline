@@ -129,7 +129,10 @@
                                             ];
                                         @endphp
                                         <div class="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden {{ $colors[$user->role] ?? 'bg-gray-100 text-gray-700' }} flex items-center justify-center font-bold">
-                                            @if($user->profile_photo_path)
+                                            @php
+                                                $hasPhoto = !empty($user->profile_photo_path) && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->profile_photo_path);
+                                            @endphp
+                                            @if($hasPhoto)
                                                 <img src="{{ asset('storage/' . $user->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                                             @else
                                                 {{ strtoupper(substr($user->name, 0, 1)) }}
