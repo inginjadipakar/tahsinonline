@@ -27,7 +27,7 @@ class DashboardController extends Controller
         // Validate selected class belongs to teacher
         $assignedClass = null;
         if ($selectedClassId) {
-            $assignedClass = $teacherClasses->find($selectedClassId);
+            $assignedClass = $teacherClasses->firstWhere('id', $selectedClassId);
         }
 
         // Fallback if not set or invalid
@@ -36,10 +36,7 @@ class DashboardController extends Controller
             session(['selected_class_id' => $assignedClass->id]);
         }
 
-        // Check if teacher is globally assigned to this class
-        $isGlobalTeacher = $teacherClasses->where('id', $assignedClass->id)->first()->pivot ?? false; 
-        // Note: Pivot check might be tricky if getTeacherClasses returned from Subscription query (no pivot).
-        // Better check:
+        // Check if teacher is directly assigned (legacy or pivot)
         $isDirectlyAssigned = $teacher->assignedClasses->contains('id', $assignedClass->id) || $teacher->assigned_class_id == $assignedClass->id;
 
         // Get students in the assigned class
