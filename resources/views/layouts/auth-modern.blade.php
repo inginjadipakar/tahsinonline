@@ -26,10 +26,10 @@
         }
     </style>
 </head>
-<body class="h-full font-sans antialiased text-gray-900 dark:text-white relative overflow-hidden bg-transparent">
+<body class="min-h-screen font-sans antialiased text-gray-900 dark:text-white bg-transparent">
     
     <!-- Main Content -->
-    <div class="relative z-10 min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         {{ $slot }}
     </div>
 
