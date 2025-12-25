@@ -41,19 +41,42 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Format phone number using helper
-        $phone = \App\Helpers\PhoneHelper::normalize($this->input('phone'));
-        $this->merge(['phone' => $phone]);
+        $originalInput = $this->input('phone');
+        $password = $this->input('password');
+        $remember = $this->boolean('remember');
 
-        if (! Auth::attempt($this->only('phone', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        // 1. Cleaner Input (remove spaces, etc)
+        $cleanPhone = preg_replace('/[^0-9]/', '', $originalInput);
+        
+        // 2. Normalized Input (force 62 prefix)
+        $normalizedPhone = \App\Helpers\PhoneHelper::normalize($cleanPhone);
 
-            throw ValidationException::withMessages([
-                'phone' => trans('auth.failed'),
-            ]);
+        // Attempt 1: Try with Normalized Phone (Standard)
+        if (Auth::attempt(['phone' => $normalizedPhone, 'password' => $password], $remember)) {
+            RateLimiter::clear($this->throttleKey());
+            return;
         }
 
-        RateLimiter::clear($this->throttleKey());
+        // Attempt 2: Try with Cleaned Phone (Legacy Support for 08xxx)
+        // Only if normalized is different (e.g. input was 08xxx)
+        if ($cleanPhone !== $normalizedPhone) {
+            if (Auth::attempt(['phone' => $cleanPhone, 'password' => $password], $remember)) {
+                
+                // Auto-migrate user to new format
+                $user = Auth::user();
+                $user->phone = $normalizedPhone;
+                $user->saveQuietly(); // save without events if needed, or just save()
+
+                RateLimiter::clear($this->throttleKey());
+                return;
+            }
+        }
+
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'phone' => trans('auth.failed'),
+        ]);
     }
 
     /**
