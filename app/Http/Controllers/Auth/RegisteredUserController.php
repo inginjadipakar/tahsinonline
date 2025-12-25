@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB; // Added for transaction support
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -95,44 +96,70 @@ class RegisteredUserController extends Controller
             $userData['name'] = $request->name;
         }
 
-        $user = User::create($userData);
+        // Use database transaction to ensure User + Subscription are both created or both roll back
+        DB::beginTransaction();
+        try {
+            // Create user first
+            $user = User::create($userData);
+            \Log::info('User created', ['user_id' => $user->id, 'phone' => $user->phone]);
 
-        event(new Registered($user));
+            event(new Registered($user));
 
-        Auth::login($user);
+            // Handle Subscription Creation - Only for STUDENTS with tahsin_class_id
+            if ($request->tahsin_class_id && $user->role === 'student') {
+                $startDate = now();
+                $endDate = now();
+                
+                // Determine package duration (default to monthly if not specified)
+                $packageType = $request->selected_package ?? 'monthly';
+                
+                switch($packageType) {
+                    case 'monthly':
+                        $endDate = $startDate->copy()->addMonth();
+                        break;
+                    case 'semester':
+                        $endDate = $startDate->copy()->addMonths(6);
+                        break;
+                    case 'yearly':
+                        $endDate = $startDate->copy()->addYear();
+                        break;
+                    default:
+                        $endDate = $startDate->copy()->addMonth();
+                }
 
-        // Handle Subscription Creation - Only for STUDENTS with tahsin_class_id
-        if ($request->tahsin_class_id && $user->role === 'student') {
-            $startDate = now();
-            $endDate = now();
-            
-            // Determine package duration (default to monthly if not specified)
-            $packageType = $request->selected_package ?? 'monthly';
-            
-            switch($packageType) {
-                case 'monthly':
-                    $endDate = $startDate->copy()->addMonth();
-                    break;
-                case 'semester':
-                    $endDate = $startDate->copy()->addMonths(6);
-                    break;
-                case 'yearly':
-                    $endDate = $startDate->copy()->addYear();
-                    break;
-                default:
-                    $endDate = $startDate->copy()->addMonth();
+                \App\Models\Subscription::create([
+                    'user_id' => $user->id,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'status' => 'pending', // Pending payment
+                    'program_type' => $request->selected_program ?? 'tahsin',
+                    'tahsin_class_id' => $request->tahsin_class_id,
+                ]);
+                \Log::info('Subscription created', ['user_id' => $user->id]);
             }
 
-            \App\Models\Subscription::create([
-                'user_id' => $user->id,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'status' => 'pending', // Pending payment
-                'program_type' => $request->selected_program ?? 'tahsin',
-                'tahsin_class_id' => $request->tahsin_class_id,
-            ]);
-        }
+            // Commit ONLY if both User and Subscription succeeded
+            DB::commit();
+            \Log::info('Registration transaction committed successfully', ['user_id' => $user->id]);
 
-        return redirect(route('dashboard', absolute: false));
+            // Login after successful commit
+            Auth::login($user);
+
+            return redirect(route('dashboard', absolute: false));
+
+        } catch (\Exception $e) {
+            // Rollback everything if any step fails
+            DB::rollBack();
+            \Log::error('Registration failed - transaction rolled back', [
+                'phone' => $request->phone,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Return error to user
+            return back()->withErrors(['registration' => 'Registration failed: ' . $e->getMessage()])->withInput();
+        }
     }
 }
