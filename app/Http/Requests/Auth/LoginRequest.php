@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log; // Added for debugging
+use Illuminate\Support\Facades\Hash; // Added for debugging
+use App\Models\User; // Added for debugging
 
 class LoginRequest extends FormRequest
 {
@@ -50,6 +53,15 @@ class LoginRequest extends FormRequest
         
         // 2. Normalized Input (force 62 prefix)
         $normalizedPhone = \App\Helpers\PhoneHelper::normalize($cleanPhone);
+
+        \Illuminate\Support\Facades\Log::info('LOGIN ATTEMPT', [
+            'original' => $originalInput,
+            'clean' => $cleanInput,
+            'normalized' => $normalizedPhone,
+            'password_len' => strlen($password),
+            'password_check' => Hash::check($password, User::where('phone', $normalizedPhone)->value('password')) ? 'MATCH' : 'FAIL',
+            'user_exists' => User::where('phone', $normalizedPhone)->exists() ? 'YES' : 'NO'
+        ]);
 
         // Attempt 1: Try with Normalized Phone (Standard)
         if (Auth::attempt(['phone' => $normalizedPhone, 'password' => $password], $remember)) {
