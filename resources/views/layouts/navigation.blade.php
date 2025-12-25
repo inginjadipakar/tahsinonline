@@ -56,7 +56,7 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
+                <x-dropdown align="right" width="48" contentClasses="py-0 bg-white dark:bg-gray-800 overflow-hidden rounded-md shadow-xl border border-white/10">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-islamic-gold bg-islamic-navy-light/50 hover:bg-islamic-navy-light focus:outline-none transition ease-in-out duration-150 shadow-inner gap-2">
                             @if (Auth::user()->profile_photo_path)
@@ -73,18 +73,64 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <div class="bg-islamic-navy-light border border-white/10 rounded-md shadow-xl">
-                            <x-dropdown-link :href="route('profile.edit')" class="text-gray-300 hover:bg-islamic-navy hover:text-islamic-gold">
-                                {{ __('Profile') }}
+                        {{-- Profile Header --}}
+                        <div class="bg-gradient-to-br from-islamic-emerald to-teal-600 px-4 py-5 text-center relative overflow-hidden">
+                            {{-- Edit Profile Link --}}
+                            <div class="absolute top-3 left-4">
+                                <a href="{{ route('profile.edit') }}" class="text-[10px] font-medium text-white/80 hover:text-white flex items-center gap-1 transition-colors">
+                                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    Edit profile
+                                </a>
+                            </div>
+
+                            {{-- Decorative Circles --}}
+                            <div class="absolute top-0 right-0 -mr-6 -mt-6 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+                            <div class="absolute bottom-0 left-0 -ml-6 -mb-6 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+
+                            {{-- Avatar --}}
+                            <div class="relative mx-auto mt-2 mb-3 w-16 h-16">
+                                @if (Auth::user()->profile_photo_path)
+                                    <img class="w-full h-full rounded-full object-cover border-2 border-white/50 shadow-md" src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="{{ Auth::user()->name }}" />
+                                @else
+                                    <div class="w-full h-full rounded-full bg-white/20 border-2 border-white/50 flex items-center justify-center text-white text-xl font-bold shadow-md">
+                                        {{ substr(Auth::user()->name, 0, 1) }}
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- User Details --}}
+                            <h3 class="text-white font-bold text-sm truncate px-2">{{ Auth::user()->name }}</h3>
+                            
+                            {{-- Role Badge --}}
+                            <div class="mt-2 flex justify-center">
+                                <span class="px-3 py-0.5 rounded-full bg-white/20 border border-white/30 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
+                                    {{ Auth::user()->role === 'admin' ? 'Administrator' : ucfirst(Auth::user()->role) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="py-1">
+                            <x-dropdown-link :href="route('dashboard')" class="text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-islamic-emerald group flex items-center gap-2">
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-islamic-emerald transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                {{ __('Dashboard') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('profile.edit')" class="text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-islamic-emerald group flex items-center gap-2">
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-islamic-emerald transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                {{ __('Settings') }}
                             </x-dropdown-link>
 
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
 
-                                <x-dropdown-link :href="route('logout')" class="text-gray-300 hover:bg-islamic-navy hover:text-islamic-gold"
+                                <x-dropdown-link :href="route('logout')" class="text-gray-600 dark:text-gray-300 hover:bg-red-50 hover:text-red-600 group flex items-center gap-2"
                                         onclick="event.preventDefault();
                                                     this.closest('form').submit();">
+                                    <svg class="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>

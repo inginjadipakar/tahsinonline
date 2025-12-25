@@ -111,15 +111,28 @@
             </div>
 
             {{-- User Profile --}}
-            <div class="p-6 border-t border-gray-100">
-                <div class="flex items-center gap-3 p-3 rounded-2xl bg-gray-50">
-                    <div
-                        class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">
-                        {{ substr(auth()->user()->name, 0, 1) }}
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold text-gray-900 truncate">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-gray-500">Guru</p>
+            <div class="p-4 border-t border-gray-100">
+                <div class="relative overflow-hidden bg-gradient-to-br from-islamic-emerald to-teal-600 rounded-2xl p-4 text-white shadow-lg">
+                    {{-- Decorative --}}
+                    <div class="absolute top-0 right-0 -mr-4 -mt-4 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
+                    
+                    <div class="flex items-center gap-3 relative z-10">
+                        <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center text-white font-bold flex-shrink-0">
+                            @if(auth()->user()->profile_photo_path)
+                                <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" class="w-full h-full rounded-full object-cover">
+                            @else
+                                {{ substr(auth()->user()->name, 0, 1) }}
+                            @endif
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-bold truncate text-white">{{ auth()->user()->name }}</p>
+                            <div class="flex items-center gap-2">
+                                <p class="text-[10px] text-emerald-100 uppercase tracking-wide font-medium">Guru</p>
+                                <a href="{{ route('profile.edit') }}" class="text-[10px] text-white/80 hover:text-white underline decoration-white/30 hover:decoration-white transition-colors">
+                                    Edit
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
