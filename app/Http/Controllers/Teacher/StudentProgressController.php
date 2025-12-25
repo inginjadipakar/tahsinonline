@@ -13,7 +13,7 @@ class StudentProgressController extends Controller
     {
         $teacherClasses = $teacher->getTeacherClasses();
         $selectedClassId = session('selected_class_id');
-        return $selectedClassId ? $teacherClasses->find($selectedClassId) : $teacherClasses->first();
+        return $selectedClassId ? $teacherClasses->firstWhere('id', $selectedClassId) : $teacherClasses->first();
     }
 
     public function index(Request $request)
