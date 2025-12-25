@@ -56,7 +56,7 @@ class LoginRequest extends FormRequest
 
         \Illuminate\Support\Facades\Log::info('LOGIN ATTEMPT', [
             'original' => $originalInput,
-            'clean' => $cleanInput,
+            'clean' => $cleanPhone,
             'normalized' => $normalizedPhone,
             'password_len' => strlen($password),
             'password_check' => Hash::check($password, User::where('phone', $normalizedPhone)->value('password')) ? 'MATCH' : 'FAIL',
