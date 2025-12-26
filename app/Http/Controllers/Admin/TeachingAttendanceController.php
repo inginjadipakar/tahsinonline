@@ -108,8 +108,11 @@ class TeachingAttendanceController extends Controller
      */
     public function export(Request $request)
     {
-        // Will implement with maatwebsite/excel package
-        // For now, return a simple message
-        return back()->with('info', 'Export Excel akan segera diimplementasikan');
+        $filters = $request->only(['teacher_id', 'class_id', 'status', 'date_from', 'date_to']);
+        
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\AttendanceExport($filters),
+            'absensi-mengajar-' . now()->format('Y-m-d') . '.xlsx'
+        );
     }
 }
