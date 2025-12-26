@@ -1,4 +1,6 @@
-<x-teacher-layout>
+@extends('layouts.teacher')
+
+@section('content')
     @php
         $classLessons = $lesson->tahsinClass->lessons->sortBy('order');
         $currentLessonIndex = $classLessons->search(function($l) use ($lesson) {
@@ -162,4 +164,4 @@
             </div>
         </div>
     </div>
-</x-teacher-layout>
+@endsection
