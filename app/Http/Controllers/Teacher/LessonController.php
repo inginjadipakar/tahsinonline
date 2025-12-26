@@ -47,6 +47,34 @@ class LessonController extends Controller
         return view('teacher.lessons.create', compact('assignedClass'));
     }
 
+    public function show(Request $request, Lesson $lesson)
+    {
+        $teacher = $request->user();
+        $assignedClass = $this->getSelectedClass($teacher);
+
+        // Check if lesson belongs to teacher's class
+        if ($lesson->tahsin_class_id !== $assignedClass->id) {
+            return redirect()->route('teacher.lessons.index')
+                ->with('error', 'Lesson tidak ditemukan di kelas Anda.');
+        }
+
+        // Load relationships for LMS features
+        $lesson->load([
+            'tahsinClass.lessons' => function($q) {
+                $q->orderBy('order');
+            },
+            // LMS Features
+            'quiz.questions.options',
+            'quiz.attempts' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            },
+            'comments.user',
+            'comments.replies.user',
+        ]);
+
+        return view('teacher.lessons.show', compact('lesson', 'assignedClass'));
+    }
+
     public function store(Request $request)
     {
         $teacher = $request->user();
