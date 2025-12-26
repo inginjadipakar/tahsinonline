@@ -194,6 +194,22 @@
                                 </div>
                             </div>
                         </div>
+                    @else
+                        {{-- Quiz Empty State --}}
+                        <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl shadow-sm border border-yellow-200 overflow-hidden">
+                            <div class="p-8 md:p-12 text-center">
+                                <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-10 h-10 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">Quiz Belum Tersedia</h3>
+                                <p class="text-sm text-gray-500 max-w-md mx-auto">
+                                    Quiz untuk menguji pemahaman materi ini akan segera dibuat oleh pengajar. 
+                                    Pastikan Anda sudah memahami materi sebelum mengerjakan quiz nanti!
+                                </p>
+                            </div>
+                        </div>
                     @endif
 
                     {{-- Comments Section --}}
