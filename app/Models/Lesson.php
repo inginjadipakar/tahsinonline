@@ -14,6 +14,7 @@ class Lesson extends Model
         'video_url',
         'video_platform',
         'pdf_file',
+        'zoom_link',
         'file_path',
         'file_type',
         'file_size',
@@ -123,5 +124,13 @@ class Lesson extends Model
     public function hasPdf(): bool
     {
         return !empty($this->pdf_file);
+    }
+
+    /**
+     * Check if lesson has Zoom link.
+     */
+    public function hasZoomLink(): bool
+    {
+        return !empty($this->zoom_link) && filter_var($this->zoom_link, FILTER_VALIDATE_URL);
     }
 }

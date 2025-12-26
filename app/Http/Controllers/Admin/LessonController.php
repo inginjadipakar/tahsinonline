@@ -31,6 +31,7 @@ class LessonController extends Controller
             'video_url' => 'nullable|url',
             'video_platform' => 'required|in:youtube,vimeo,none',
             'pdf_file' => 'nullable|file|mimes:pdf|max:10240', // 10MB max
+            'zoom_link' => 'nullable|url|max:255',
             'order' => 'required|integer|min:0',
         ]);
 
@@ -61,6 +62,7 @@ class LessonController extends Controller
             'video_url' => 'nullable|url',
             'video_platform' => 'required|in:youtube,vimeo,none',
             'pdf_file' => 'nullable|file|mimes:pdf|max:10240',
+            'zoom_link' => 'nullable|url|max:255',
             'order' => 'required|integer|min:0',
         ]);
 

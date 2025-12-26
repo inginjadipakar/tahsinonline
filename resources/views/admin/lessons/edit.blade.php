@@ -83,6 +83,18 @@
                             </div>
                         </div>
 
+                        <!-- Zoom Link Section -->
+                        <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-3">🎥 Link Zoom Meeting (Kelas Online)</h3>
+                            
+                            <div class="mb-4">
+                                <label for="zoom_link" class="block text-sm font-medium text-gray-700">Zoom Meeting Link</label>
+                                <input type="url" name="zoom_link" id="zoom_link" value="{{ old('zoom_link', $lesson->zoom_link) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="https://zoom.us/j/..." />
+                                <p class="mt-1 text-xs text-gray-500">Link Zoom untuk kelas online (opsional)</p>
+                                @error('zoom_link')<span class="text-red-600 text-sm">{{ $message }}</span>@enderror
+                            </div>
+                        </div>
+
                         <div class="mb-4">
                             <label for="order" class="block text-sm font-medium text-gray-700">Urutan</label>
                             <input type="number" name="order" id="order" value="{{ old('order', $lesson->order) }}" required min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
