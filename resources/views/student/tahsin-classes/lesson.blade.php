@@ -112,28 +112,92 @@
                 </div>
 
                 {{-- Content Area --}}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    {{-- Video --}}
-                    @if($lesson->video_url)
-                        <div class="aspect-w-16 aspect-h-9 bg-black">
-                            <iframe src="{{ $lesson->video_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+                <div class="space-y-6">
+                    {{-- Video Player Component --}}
+                    <x-lesson.video-player :lesson="$lesson" />
+
+                    {{-- PDF Viewer Component --}}
+                    <x-lesson.pdf-viewer :lesson="$lesson" />
+
+                    {{-- Text Content --}}
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-6 md:p-8 space-y-6">
+                            @if($lesson->description)
+                                <div class="bg-blue-50/50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                                    <p class="text-gray-700 leading-relaxed">{{ $lesson->description }}</p>
+                                </div>
+                            @endif
+
+                            @if($lesson->content)
+                                <div class="prose prose-lg prose-emerald max-w-none text-gray-600">
+                                    {!! nl2br(e($lesson->content)) !!}
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Quiz Section --}}
+                    @if($lesson->quiz)
+                        <div class="bg-gradient-to-r from-emerald-50 to-blue-50 rounded-2xl shadow-sm border border-emerald-100 overflow-hidden">
+                            <div class="p-6 md:p-8">
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-shrink-0 w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="text-xl font-bold text-gray-900 mb-2">📝 {{ $lesson->quiz->title }}</h3>
+                                        @if($lesson->quiz->description)
+                                            <p class="text-gray-600 mb-4">{{ $lesson->quiz->description }}</p>
+                                        @endif
+                                        
+                                        <div class="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                                            <span class="flex items-center gap-1">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                                {{ $lesson->quiz->questions->count() }} Pertanyaan
+                                            </span>
+                                            <span class="flex items-center gap-1">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+                                                Passing Score: {{ $lesson->quiz->passing_score }}%
+                                            </span>
+                                        </div>
+
+                                        @php
+                                            $userAttempts = $lesson->quiz->attempts()->where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
+                                            $bestAttempt = $userAttempts->sortByDesc('score')->first();
+                                        @endphp
+
+                                        @if($bestAttempt)
+                                            <div class="bg-white/80 rounded-lg p-4 mb-4">
+                                                <p class="text-sm font-semibold text-gray-700 mb-2">Nilai Terbaik Anda:</p>
+                                                <div class="flex items-center gap-3">
+                                                    <div class="text-3xl font-bold {{ $bestAttempt->passed ? 'text-emerald-600' : 'text-red-600' }}">
+                                                        {{ $bestAttempt->score }}%
+                                                    </div>
+                                                    @if($bestAttempt->passed)
+                                                        <span class="bg-emerald-100 text-emerald-700 text-xs px-3 py-1 rounded-full font-bold">✅ LULUS</span>
+                                                    @else
+                                                        <span class="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full font-bold">❌ Belum Lulus</span>
+                                                    @endif
+                                                </div>
+                                                <p class="text-xs text-gray-500 mt-2">Total percobaan: {{ $userAttempts->count() }} kali</p>
+                                            </div>
+                                        @endif
+
+                                        <a href="{{ route('quiz.show', $lesson->quiz) }}" 
+                                           class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                                            {{ $bestAttempt ? 'Coba Lagi' : 'Mulai Quiz' }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     @endif
 
-                    {{-- Text Content --}}
-                    <div class="p-6 md:p-8 space-y-6">
-                        @if($lesson->description)
-                            <div class="bg-blue-50/50 border-l-4 border-blue-500 p-4 rounded-r-lg">
-                                <p class="text-gray-700 leading-relaxed">{{ $lesson->description }}</p>
-                            </div>
-                        @endif
-
-                        @if($lesson->content)
-                            <div class="prose prose-lg prose-emerald max-w-none text-gray-600">
-                                {!! nl2br(e($lesson->content)) !!}
-                            </div>
-                        @endif
-                    </div>
+                    {{-- Comments Section --}}
+                    <x-lesson.comments :lesson="$lesson" />
                 </div>
 
                 {{-- Navigation & Action --}}

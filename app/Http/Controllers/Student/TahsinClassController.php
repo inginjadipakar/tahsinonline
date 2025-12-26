@@ -53,11 +53,21 @@ class TahsinClassController extends Controller
             return redirect()->route('dashboard')->with('error', 'Anda perlu langganan aktif untuk mengakses lesson.');
         }
 
-        $lesson->load(['tahsinClass.lessons' => function($q) {
-            $q->orderBy('order');
-        }, 'tahsinClass.lessons.userProgress' => function($query) {
-            $query->where('user_id', auth()->id());
-        }]);
+        $lesson->load([
+            'tahsinClass.lessons' => function($q) {
+                $q->orderBy('order');
+            }, 
+            'tahsinClass.lessons.userProgress' => function($query) {
+                $query->where('user_id', auth()->id());
+            },
+            // LMS Features
+            'quiz.questions.options', // Quiz dengan questions dan options
+            'quiz.attempts' => function($query) {
+                $query->where('user_id', auth()->id())->orderBy('created_at', 'desc');
+            },
+            'comments.user', // Comments dengan user info
+            'comments.replies.user', // Nested replies
+        ]);
         
         // Get or create user progress for CURRENT lesson
         $progress = UserProgress::firstOrCreate(
