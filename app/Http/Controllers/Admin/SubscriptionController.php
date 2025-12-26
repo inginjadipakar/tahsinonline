@@ -102,13 +102,51 @@ class SubscriptionController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * Also deletes the associated user account (cascade delete).
      */
     public function destroy(string $id)
     {
         $subscription = Subscription::findOrFail($id);
-        $subscription->delete();
-
-        return redirect()->route('admin.subscriptions.index')->with('success', 'Subscription berhasil dihapus.');
+        $user = $subscription->user;
+        
+        if ($user) {
+            $userName = $user->name;
+            $userPhone = $user->phone;
+            
+            // Delete all user-related data
+            DB::beginTransaction();
+            try {
+                // 1. Delete payments
+                Payment::where('subscription_id', $subscription->id)->delete();
+                Payment::where('user_id', $user->id)->delete();
+                
+                // 2. Delete user progress
+                $user->userProgress()->delete();
+                
+                // 3. Delete all user's subscriptions
+                $user->subscriptions()->delete();
+                
+                // 4. Delete user account
+                $user->delete();
+                
+                DB::commit();
+                
+                return redirect()->route('admin.subscriptions.index')
+                    ->with('success', "Subscription dan akun user '{$userName}' ({$userPhone}) berhasil dihapus PERMANEN. User harus daftar ulang untuk kembali.");
+            } catch (\Exception $e) {
+                DB::rollBack();
+                
+                return redirect()->route('admin.subscriptions.index')
+                    ->with('error', 'Gagal menghapus subscription: ' . $e->getMessage());
+            }
+        } else {
+            // Orphan subscription (no user)
+            Payment::where('subscription_id', $subscription->id)->delete();
+            $subscription->delete();
+            
+            return redirect()->route('admin.subscriptions.index')
+                ->with('success', 'Orphan subscription berhasil dihapus.');
+        }
     }
 
     /**
