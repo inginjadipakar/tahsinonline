@@ -29,8 +29,16 @@ class LessonController extends Controller
             'description' => 'nullable|string',
             'content' => 'nullable|string',
             'video_url' => 'nullable|url',
+            'video_platform' => 'required|in:youtube,vimeo,none',
+            'pdf_file' => 'nullable|file|mimes:pdf|max:10240', // 10MB max
             'order' => 'required|integer|min:0',
         ]);
+
+        // Handle PDF upload
+        if ($request->hasFile('pdf_file')) {
+            $pdfPath = $request->file('pdf_file')->store('lesson-pdfs', 'public');
+            $validated['pdf_file'] = $pdfPath;
+        }
 
         Lesson::create($validated);
 
@@ -51,8 +59,20 @@ class LessonController extends Controller
             'description' => 'nullable|string',
             'content' => 'nullable|string',
             'video_url' => 'nullable|url',
+            'video_platform' => 'required|in:youtube,vimeo,none',
+            'pdf_file' => 'nullable|file|mimes:pdf|max:10240',
             'order' => 'required|integer|min:0',
         ]);
+
+        // Handle PDF upload
+        if ($request->hasFile('pdf_file')) {
+            // Delete old PDF if exists
+            if ($lesson->pdf_file) {
+                \Storage::disk('public')->delete($lesson->pdf_file);
+            }
+            $pdfPath = $request->file('pdf_file')->store('lesson-pdfs', 'public');
+            $validated['pdf_file'] = $pdfPath;
+        }
 
         $lesson->update($validated);
 

@@ -12,6 +12,8 @@ class Lesson extends Model
         'description',
         'content',
         'video_url',
+        'video_platform',
+        'pdf_file',
         'file_path',
         'file_type',
         'file_size',
@@ -56,5 +58,50 @@ class Lesson extends Model
     public function scopeByTeacher($query, $teacherId)
     {
         return $query->where('created_by', $teacherId);
+    }
+
+    /**
+     * Get embeddable video URL for YouTube/Vimeo.
+     */
+    public function getEmbedUrl(): ?string
+    {
+        if ($this->video_platform === 'none' || empty($this->video_url)) {
+            return null;
+        }
+
+        if ($this->video_platform === 'youtube') {
+            // Convert various YouTube URL formats to embed
+            // https://www.youtube.com/watch?v=VIDEO_ID
+            // https://youtu.be/VIDEO_ID
+            if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/', $this->video_url, $matches)) {
+                return 'https://www.youtube.com/embed/' . $matches[1];
+            }
+        }
+
+        if ($this->video_platform === 'vimeo') {
+            // Convert Vimeo URL to embed
+            // https://vimeo.com/VIDEO_ID
+            if (preg_match('/vimeo\.com\/(\d+)/', $this->video_url, $matches)) {
+                return 'https://player.vimeo.com/video/' . $matches[1];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if lesson has video.
+     */
+    public function hasVideo(): bool
+    {
+        return $this->video_platform !== 'none' && !empty($this->video_url);
+    }
+
+    /**
+     * Check if lesson has PDF.
+     */
+    public function hasPdf(): bool
+    {
+        return !empty($this->pdf_file);
     }
 }
