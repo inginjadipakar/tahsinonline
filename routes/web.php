@@ -472,6 +472,9 @@ Route::middleware('auth')->group(function () {
     // Teacher Lessons Management (Full CRUD with LMS)
     Route::prefix('teacher')->name('teacher.')->middleware('teacher')->group(function () {
         Route::resource('lessons', App\Http\Controllers\Teacher\LessonController::class);
+        
+        // Teaching Attendance
+        Route::post('/attendance', [App\Http\Controllers\Teacher\TeachingAttendanceController::class, 'store'])->name('attendance.store');
     });
     
     // Teacher Quiz Management

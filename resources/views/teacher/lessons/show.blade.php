@@ -22,6 +22,21 @@
                 <p class="text-sm text-gray-500 mt-1">Materi Ke-{{ $lesson->order }} - {{ $lesson->tahsinClass->name }}</p>
             </div>
 
+            {{-- Success/Error Messages --}}
+            @if(session('success'))
+                <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            {{-- ATTENDANCE FORM - PALING ATAS --}}
+            <x-teacher.attendance-form :lesson="$lesson" />
+
             {{-- Teacher Actions --}}
             <div class="mb-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4">
                 <h3 class="text-sm font-semibold text-emerald-900 mb-3">📝 Aksi Guru</h3>
