@@ -369,4 +369,27 @@ Route::get('/storage/{path}', function ($path) {
     ]);
 })->where('path', '.*');
 
+//  Lesson Comments (Authenticated users)
+Route::post('/comments', [App\Http\Controllers\LessonCommentController::class, 'store'])->name('comments.store')->middleware('auth');
+Route::put('/comments/{comment}', [App\Http\Controllers\LessonCommentController::class, 'update'])->name('comments.update')->middleware('auth');
+Route::delete('/comments/{comment}', [App\Http\Controllers\LessonCommentController::class, 'destroy'])->name('comments.destroy')->middleware('auth');
+
+// Quiz Routes (Teacher & Student)
+Route::middleware('auth')->group(function () {
+    // Teacher Quiz Management
+    Route::prefix('teacher/quiz')->name('teacher.quiz.')->middleware('role:teacher')->group(function () {
+        Route::get('/create/{lesson}', [App\Http\Controllers\Teacher\QuizController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Teacher\QuizController::class, 'store'])->name('store');
+        Route::get('/{quiz}/edit', [App\Http\Controllers\Teacher\QuizController::class, 'edit'])->name('edit');
+        Route::put('/{quiz}', [App\Http\Controllers\Teacher\QuizController::class, 'update'])->name('update');
+        Route::delete('/{quiz}', [App\Http\Controllers\Teacher\QuizController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Student Quiz Taking
+    Route::prefix('quiz')->name('quiz.')->group(function () {
+        Route::get('/{quiz}', [App\Http\Controllers\Student\QuizController::class, 'show'])->name('show');
+        Route::post('/{quiz}/submit', [App\Http\Controllers\Student\QuizController::class, 'submit'])->name('submit');
+    });
+});
+
 require __DIR__ . '/auth.php';
