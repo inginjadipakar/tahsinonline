@@ -224,6 +224,20 @@ Route::get('/delete-user/{secret}/{phone}', function ($secret, $phone) {
     ]);
 });
 
+// CRITICAL: Complete cleanup of user data by phone
+Route::get('/cleanup-phone/{secret}/{phone}', function ($secret, $phone) {
+    if ($secret !== 'mjsmulia24') {
+        abort(404);
+    }
+    
+    $_GET['phone'] = $phone;
+    ob_start();
+    require base_path('cleanup_phone.php');
+    $output = ob_get_clean();
+    
+    return response('<pre>' . $output . '</pre>')->header('Content-Type', 'text/html');
+});
+
 // SECRET: Cleanup subscriptions for non-students (admin/teacher)
 // Akses: /cleanup-subscriptions/mjsmulia24
 Route::get('/cleanup-subscriptions/{secret}', function ($secret) {
