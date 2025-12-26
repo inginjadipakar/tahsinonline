@@ -31,6 +31,11 @@ class Lesson extends Model
         return $this->hasMany(UserProgress::class);
     }
 
+    public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\LessonComment::class)->whereNull('parent_id')->orderBy('created_at', 'desc');
+    }
+
     public function isCompletedBy($userId): bool
     {
         return $this->userProgress()->where('user_id', $userId)->where('is_completed', true)->exists();
