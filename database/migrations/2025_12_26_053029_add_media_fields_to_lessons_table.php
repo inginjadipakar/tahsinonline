@@ -12,9 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lessons', function (Blueprint $table) {
-            $table->string('video_url')->nullable()->after('content');
-            $table->enum('video_platform', ['youtube', 'vimeo', 'none'])->default('none')->after('video_url');
-            $table->string('pdf_file')->nullable()->after('video_platform');
+            // Check if columns don't exist before adding
+            if (!Schema::hasColumn('lessons', 'video_url')) {
+                $table->string('video_url')->nullable()->after('content');
+            }
+            if (!Schema::hasColumn('lessons', 'video_platform')) {
+                $table->enum('video_platform', ['youtube', 'vimeo', 'none'])->default('none')->after('video_url');
+            }
+            if (!Schema::hasColumn('lessons', 'pdf_file')) {
+                $table->string('pdf_file')->nullable()->after('video_platform');
+            }
         });
     }
 
