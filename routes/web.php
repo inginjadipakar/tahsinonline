@@ -469,6 +469,11 @@ Route::delete('/comments/{comment}', [App\Http\Controllers\LessonCommentControll
 
 // Quiz Routes (Teacher & Student)
 Route::middleware('auth')->group(function () {
+    // Teacher Lessons Management (Full CRUD with LMS)
+    Route::prefix('teacher')->name('teacher.')->middleware('role:teacher')->group(function () {
+        Route::resource('lessons', App\Http\Controllers\Teacher\LessonController::class);
+    });
+    
     // Teacher Quiz Management
     Route::prefix('teacher/quiz')->name('teacher.quiz.')->middleware('role:teacher')->group(function () {
         Route::get('/create/{lesson}', [App\Http\Controllers\Teacher\QuizController::class, 'create'])->name('create');
