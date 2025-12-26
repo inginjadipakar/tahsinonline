@@ -230,10 +230,86 @@ Route::get('/cleanup-phone/{secret}/{phone}', function ($secret, $phone) {
         abort(404);
     }
     
-    $_GET['phone'] = $phone;
-    ob_start();
-    require base_path('cleanup_phone.php');
-    $output = ob_get_clean();
+    $phoneVariants = [
+        $phone,
+        '0' . substr($phone, 2),
+        '62' . ltrim($phone, '0'),
+        '+' . $phone,
+    ];
+    
+    $output = "=================================================================\n";
+    $output .= "COMPLETE CLEANUP FOR PHONE: {$phone}\n";
+    $output .= "=================================================================\n\n";
+    
+    $output .= "🔍 Searching variants:\n";
+    foreach ($phoneVariants as $variant) {
+        $output .= "   - {$variant}\n";
+    }
+    $output .= "\n";
+    
+    DB::beginTransaction();
+    try {
+        $deleted = [
+            'users' => 0,
+            'subscriptions' => 0,
+            'payments' => 0,
+            'user_progress' => 0,
+        ];
+        
+        // 1. Find and delete USER
+        foreach ($phoneVariants as $variant) {
+            $users = \App\Models\User::where('phone', $variant)->get();
+            foreach ($users as $user) {
+                $output .= "🗑️  Deleting USER: {$user->name} (ID: {$user->id})\n";
+                
+                // Delete user progress
+                $progressCount = $user->userProgress()->count();
+                $user->userProgress()->delete();
+                $deleted['user_progress'] += $progressCount;
+                
+                $user->delete();
+                $deleted['users']++;
+            }
+        }
+        
+        // 2. Find and delete ORPHAN SUBSCRIPTIONS
+        $allSubs = \App\Models\Subscription::all();
+        foreach ($allSubs as $sub) {
+            $user = \App\Models\User::find($sub->user_id);
+            if (!$user) {
+                $output .= "🗑️  Deleting ORPHAN SUBSCRIPTION: ID {$sub->id}\n";
+                
+                // Delete payments first
+                $payments = \App\Models\Payment::where('subscription_id', $sub->id)->get();
+                foreach ($payments as $payment) {
+                    $output .= "   └─ Deleting payment: {$payment->amount}\n";
+                    $payment->delete();
+                    $deleted['payments']++;
+                }
+                
+                $sub->delete();
+                $deleted['subscriptions']++;
+            }
+        }
+        
+        DB::commit();
+        
+        $output .= "\n";
+        $output .= "✅ CLEANUP COMPLETE!\n";
+        $output .= "═══════════════════════════════════════════════════════════════\n";
+        $output .= "Deleted:\n";
+        $output .= "  - Users: {$deleted['users']}\n";
+        $output .= "  - Subscriptions: {$deleted['subscriptions']}\n";
+        $output .= "  - Payments: {$deleted['payments']}\n";
+        $output .= "  - User Progress: {$deleted['user_progress']}\n";
+        $output .= "\n";
+        $output .= "✅ Phone {$phone} is now FREE to register again!\n";
+        $output .= "═══════════════════════════════════════════════════════════════\n";
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        $output .= "\n❌ ERROR: " . $e->getMessage() . "\n";
+    }
     
     return response('<pre>' . $output . '</pre>')->header('Content-Type', 'text/html');
 });
