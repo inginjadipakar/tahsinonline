@@ -469,6 +469,15 @@ Route::delete('/comments/{comment}', [App\Http\Controllers\LessonCommentControll
 
 // Quiz Routes (Teacher & Student)
 Route::middleware('auth')->group(function () {
+    // Admin Attendance Management
+    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+        Route::get('/attendances', [App\Http\Controllers\Admin\TeachingAttendanceController::class, 'index'])->name('attendances.index');
+        Route::get('/attendances/{attendance}', [App\Http\Controllers\Admin\TeachingAttendanceController::class, 'show'])->name('attendances.show');
+        Route::patch('/attendances/{attendance}/approve', [App\Http\Controllers\Admin\TeachingAttendanceController::class, 'approve'])->name('attendances.approve');
+        Route::patch('/attendances/{attendance}/reject', [App\Http\Controllers\Admin\TeachingAttendanceController::class, 'reject'])->name('attendances.reject');
+        Route::get('/attendances-export', [App\Http\Controllers\Admin\TeachingAttendanceController::class, 'export'])->name('attendances.export');
+    });
+    
     // Teacher Lessons Management (Full CRUD with LMS)
     Route::prefix('teacher')->name('teacher.')->middleware('teacher')->group(function () {
         Route::resource('lessons', App\Http\Controllers\Teacher\LessonController::class);
