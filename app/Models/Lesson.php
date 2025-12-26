@@ -36,6 +36,11 @@ class Lesson extends Model
         return $this->hasMany(\App\Models\LessonComment::class)->whereNull('parent_id')->orderBy('created_at', 'desc');
     }
 
+    public function quiz(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\Quiz::class);
+    }
+
     public function isCompletedBy($userId): bool
     {
         return $this->userProgress()->where('user_id', $userId)->where('is_completed', true)->exists();
@@ -81,6 +86,7 @@ class Lesson extends Model
             if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/', $this->video_url, $matches)) {
                 return 'https://www.youtube.com/embed/' . $matches[1];
             }
+            \Log::warning("Invalid YouTube URL format: {$this->video_url} for lesson ID {$this->id}");
         }
 
         if ($this->video_platform === 'vimeo') {
@@ -89,9 +95,18 @@ class Lesson extends Model
             if (preg_match('/vimeo\.com\/(\d+)/', $this->video_url, $matches)) {
                 return 'https://player.vimeo.com/video/' . $matches[1];
             }
+            \Log::warning("Invalid Vimeo URL format: {$this->video_url} for lesson ID {$this->id}");
         }
 
         return null;
+    }
+
+    /**
+     * Check if lesson has valid video embed URL.
+     */
+    public function hasValidVideo(): bool
+    {
+        return $this->hasVideo() && !is_null($this->getEmbedUrl());
     }
 
     /**
