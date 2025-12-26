@@ -293,7 +293,7 @@ Route::middleware(['auth', AdminOnly::class])->prefix('admin')->name('admin.')->
     
     
     // Teacher Assignment for Subscriptions
-    Route::post('subscriptions/{subscription}/assign', [AdminSubscriptionController::class, 'assignTeacher'])->name('subscriptions.assign');
+    Route::patch('subscriptions/{subscription}/assign', [AdminSubscriptionController::class, 'assignTeacher'])->name('subscriptions.assign');
     Route::patch('subscriptions/{subscription}/assign-teacher', [AdminSubscriptionController::class, 'assignTeacher'])->name('subscriptions.assign-teacher'); // Legacy support
     Route::delete('subscriptions/{subscription}/unassign', [AdminSubscriptionController::class, 'unassignTeacher'])->name('subscriptions.unassign');
     Route::delete('subscriptions/{subscription}/unassign-teacher', [AdminSubscriptionController::class, 'unassignTeacher'])->name('subscriptions.unassign-teacher'); // Legacy support
