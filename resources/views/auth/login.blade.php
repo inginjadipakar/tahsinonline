@@ -32,7 +32,8 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('login') }}" class="space-y-4" x-data="{ showPassword: false }">
+                <form method="POST" action="{
+{ route('login') }}" class="space-y-4" x-data="{ showPassword: false, phoneInput: '' }">
                     @csrf
 
                     {{-- Phone Number Input --}}
@@ -42,9 +43,18 @@
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <span class="text-gray-500 font-bold border-r border-gray-300 pr-2 mr-1">+62</span>
                             </div>
-                            <input id="phone" type="text" name="phone" value="{{ old('phone') }}" 
+                            <input id="phone" type="text" name="phone" 
+                                   x-model="phoneInput"
+                                   x-on:input="
+                                       let val = $el.value.replace(/[^0-9]/g, '');
+                                       if (val.startsWith('62')) val = val.substring(2);
+                                       if (val.startsWith('0')) val = val.substring(1);
+                                       phoneInput = val;
+                                       $el.value = val;
+                                   "
+                                   value="{{ old('phone') }}" 
                                    class="block w-full pl-16 pr-4 py-2.5 rounded-lg bg-gray-50 dark:bg-islamic-navy-dark border border-gray-200 dark:border-gray-600 focus:bg-white focus:border-islamic-emerald focus:ring-2 focus:ring-islamic-emerald/20 text-gray-900 dark:text-white placeholder-gray-400 transition-all font-medium text-sm shadow-sm" 
-                                   placeholder="8123456789" 
+                                   placeholder="Contoh: 81234567890" 
                                    required autofocus autocomplete="username">
                         </div>
                         @error('phone')
