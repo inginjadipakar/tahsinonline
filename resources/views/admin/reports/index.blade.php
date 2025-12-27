@@ -19,7 +19,7 @@
                 <div class="bg-white border border-gray-300 p-2">
                     <p class="text-[9px] text-gray-600 uppercase font-semibold mb-0.5">Siswa Terdaftar</p>
                     <h3 class="text-xl font-bold text-gray-900">{{ $totalStudents }}</h3>
-                    <span class="text-[8px] text-green-700">+{{ $total Students }} Total</span>
+                    <span class="text-[8px] text-green-700">+{{ $totalStudents }} Total</span>
                 </div>
 
                 <div class="bg-white border border-gray-300 p-2">
