@@ -32,8 +32,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{
-{ route('login') }}" class="space-y-4" x-data="{ showPassword: false, phoneInput: '' }">
+                <form method="POST" action="{{ route('login') }}" class="space-y-4" x-data="{ showPassword: false, phoneInput: '' }">
                     @csrf
 
                     {{-- Phone Number Input --}}
