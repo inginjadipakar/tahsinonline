@@ -108,14 +108,22 @@
                     <x-input-error :messages="$errors->get('parent_name')" class="mt-2" />
                 </div>
 
-                <div>
+                <div x-data="{ phoneChild: '' }">
                     <x-input-label for="phone_child" value="No HP Orang Tua (untuk login) *" />
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span class="text-gray-500 font-bold border-r border-gray-300 pr-2 mr-1">+62</span>
                         </div>
                         <x-text-input id="phone_child" class="block mt-2 w-full py-3 pl-16 rounded-xl" type="text" name="phone" 
-                                      :value="old('phone')" placeholder="8123456789" />
+                                      x-model="phoneChild"
+                                      x-on:input="
+                                          let val = $el.value.replace(/[^0-9]/g, '');
+                                          if (val.startsWith('62')) val = val.substring(2);
+                                          if (val.startsWith('0')) val = val.substring(1);
+                                          phoneChild = val;
+                                          $el.value = val;
+                                      "
+                                      :value="old('phone')" placeholder="Contoh: 81234567890" />
                     </div>
                     <x-input-error :messages="$errors->get('phone')" class="mt-2" />
                 </div>
@@ -185,14 +193,22 @@
                     <x-input-error :messages="$errors->get('name')" class="mt-2" />
                 </div>
 
-                <div>
+                <div x-data="{ phoneAdult: '' }">
                     <x-input-label for="phone_adult" value="No HP (untuk login) *" />
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span class="text-gray-500 font-bold border-r border-gray-300 pr-2 mr-1">+62</span>
                         </div>
                         <x-text-input id="phone_adult" class="block mt-2 w-full py-3 pl-16 rounded-xl" type="text" name="phone" 
-                                      :value="old('phone')" placeholder="8123456789" />
+                                      x-model="phoneAdult"
+                                      x-on:input="
+                                          let val = $el.value.replace(/[^0-9]/g, '');
+                                          if (val.startsWith('62')) val = val.substring(2);
+                                          if (val.startsWith('0')) val = val.substring(1);
+                                          phoneAdult = val;
+                                          $el.value = val;
+                                      "
+                                      :value="old('phone')" placeholder="Contoh: 81234567890" />
                     </div>
                     <x-input-error :messages="$errors->get('phone')" class="mt-2" />
                 </div>
