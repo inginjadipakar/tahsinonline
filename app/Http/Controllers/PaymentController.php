@@ -3,22 +3,59 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Payment;
+use App\Models\TahsinClass;
 
 class PaymentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Admin: View all payments
+        // Admin: View all payments with search and filters
         if (auth()->user()->role === 'admin') {
-            $payments = \App\Models\Payment::with('user')->latest()->paginate(10);
-            return view('admin.payments.index', compact('payments'));
+            $query = Payment::with(['user.subscription.tahsinClass']);
+            
+            // Search by name or phone
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->whereHas('user', function($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                      ->orWhere('phone', 'like', '%' . $search . '%');
+                });
+            }
+            
+            // Filter by status
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+            
+            // Filter by date range
+            if ($request->filled('date_from')) {
+                $query->whereDate('created_at', '>=', $request->date_from);
+            }
+            if ($request->filled('date_to')) {
+                $query->whereDate('created_at', '<=', $request->date_to);
+            }
+            
+            // Filter by class
+            if ($request->filled('class_id')) {
+                $classId = $request->class_id;
+                $query->whereHas('user.subscription', function($q) use ($classId) {
+                    $q->where('tahsin_class_id', $classId);
+                });
+            }
+            
+            // Use simplePaginate for better performance (no COUNT query)
+            $payments = $query->latest()->simplePaginate(15)->withQueryString();
+            $classes = TahsinClass::orderBy('name')->get();
+            
+            return view('admin.payments.index', compact('payments', 'classes'));
         }
         
         // Student: View own payments
-        $payments = auth()->user()->payments()->latest()->paginate(10);
+        $payments = auth()->user()->payments()->latest()->simplePaginate(15);
         return view('student.payments.index', compact('payments'));
     }
 

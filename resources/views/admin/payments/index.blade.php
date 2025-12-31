@@ -9,11 +9,112 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
+                    
+                    {{-- Search & Filter Form --}}
+                    <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <form method="GET" action="{{ route('payments.index') }}" class="flex flex-wrap gap-3 items-end">
+                            {{-- Search Input --}}
+                            <div class="flex-1 min-w-[180px]">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Search</label>
+                                <input type="text" name="search" value="{{ request('search') }}" 
+                                       placeholder="Nama atau No. HP..." 
+                                       class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            
+                            {{-- Status Filter --}}
+                            <div class="w-32">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
+                                <select name="status" class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="">Semua</option>
+                                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>Accepted</option>
+                                    <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                </select>
+                            </div>
+                            
+                            {{-- Date From --}}
+                            <div class="w-36">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Dari Tanggal</label>
+                                <input type="date" name="date_from" value="{{ request('date_from') }}" 
+                                       class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            
+                            {{-- Date To --}}
+                            <div class="w-36">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Sampai Tanggal</label>
+                                <input type="date" name="date_to" value="{{ request('date_to') }}" 
+                                       class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            
+                            {{-- Class Filter --}}
+                            <div class="w-44">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Kelas</label>
+                                <select name="class_id" class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="">Semua Kelas</option>
+                                    @foreach($classes as $class)
+                                        <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>
+                                            {{ $class->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            
+                            {{-- Buttons --}}
+                            <div class="flex gap-2">
+                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors inline-flex items-center gap-1">
+                                    <svg class="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
+                                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/>
+                                    </svg>
+                                    Cari
+                                </button>
+                                <a href="{{ route('payments.index') }}" class="px-4 py-2 bg-gray-400 text-white text-sm font-medium rounded-md hover:bg-gray-500 transition-colors">
+                                    Reset
+                                </a>
+                            </div>
+                        </form>
+                        
+                        {{-- Active Filters Display --}}
+                        @if(request()->hasAny(['search', 'status', 'date_from', 'date_to', 'class_id']))
+                            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+                                <span class="text-gray-500">Filter aktif:</span>
+                                @if(request('search'))
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                                        Search: "{{ request('search') }}"
+                                    </span>
+                                @endif
+                                @if(request('status'))
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                                        Status: {{ ucfirst(request('status')) }}
+                                    </span>
+                                @endif
+                                @if(request('date_from'))
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                                        Dari: {{ request('date_from') }}
+                                    </span>
+                                @endif
+                                @if(request('date_to'))
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                                        Sampai: {{ request('date_to') }}
+                                    </span>
+                                @endif
+                                @if(request('class_id'))
+                                    @php $selectedClass = $classes->find(request('class_id')); @endphp
+                                    @if($selectedClass)
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                                        Kelas: {{ $selectedClass->name }}
+                                    </span>
+                                    @endif
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                    
                     <div class="relative overflow-x-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">Student</th>
+                                    <th scope="col" class="px-6 py-3">Kelas</th>
                                     <th scope="col" class="px-6 py-3">Date</th>
                                     <th scope="col" class="px-6 py-3">Proof</th>
                                     <th scope="col" class="px-6 py-3">Status</th>
@@ -35,7 +136,7 @@
                                         $userName = $payment->user?->name ?? 'User';
                                         $userPhone = $payment->user?->phone ?? '';
                                         $subscription = $payment->user?->subscription;
-                                        $className = $subscription?->tahsinClass?->name ?? 'Kelas Tahsin';
+                                        $className = $subscription?->tahsinClass?->name ?? '-';
                                         
                                         // WhatsApp message for approval
                                         $waApproveMessage = "Assalamu'alaikum {$userName},
@@ -57,6 +158,15 @@ Jazakallahu khairan 🙏
                                         <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             {{ $payment->user?->name ?? 'User Deleted' }}<br>
                                             <span class="text-xs text-gray-500">{{ $payment->user?->phone ?? '-' }}</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @if($className !== '-')
+                                                <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-indigo-100 text-indigo-700">
+                                                    {{ $className }}
+                                                </span>
+                                            @else
+                                                <span class="text-gray-400 text-xs">-</span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $payment->created_at->format('d M Y H:i') }}</td>
                                         <td class="px-6 py-4">
@@ -154,19 +264,46 @@ Jazakallahu khairan 🙏
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                        <td colspan="6" class="px-6 py-12 text-center text-gray-500">
                                             <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" viewBox="0 0 256 256" fill="currentColor">
                                                 <path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,16V88H32V64Zm0,128H32V104H224v88Z"/>
                                             </svg>
-                                            No payments found.
+                                            @if(request()->hasAny(['search', 'status', 'date_from', 'date_to', 'class_id']))
+                                                Tidak ada pembayaran yang cocok dengan filter.
+                                            @else
+                                                No payments found.
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-4">
-                        {{ $payments->links() }}
+                    
+                    {{-- Pagination --}}
+                    <div class="mt-4 flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            Menampilkan {{ $payments->count() }} data
+                        </div>
+                        <div class="flex gap-2">
+                            @if ($payments->previousPageUrl())
+                                <a href="{{ $payments->previousPageUrl() }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                                    <svg class="w-4 h-4 mr-1" viewBox="0 0 256 256" fill="currentColor">
+                                        <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"/>
+                                    </svg>
+                                    Previous
+                                </a>
+                            @endif
+                            
+                            @if ($payments->hasMorePages())
+                                <a href="{{ $payments->nextPageUrl() }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 transition-colors">
+                                    Next
+                                    <svg class="w-4 h-4 ml-1" viewBox="0 0 256 256" fill="currentColor">
+                                        <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/>
+                                    </svg>
+                                </a>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
