@@ -159,13 +159,13 @@ Jazakallahu khairan 🙏
                                             {{ $payment->user?->name ?? 'User Deleted' }}<br>
                                             <span class="text-xs text-gray-500">{{ $payment->user?->phone ?? '-' }}</span>
                                         </td>
-                                        <td class="px-6 py-4">
+                                        <td class="px-6 py-4 whitespace-nowrap">
                                             @if($className !== '-')
-                                                <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-indigo-100 text-indigo-700">
+                                                <span class="text-sm font-medium text-indigo-600" title="{{ $className }}">
                                                     {{ $className }}
                                                 </span>
                                             @else
-                                                <span class="text-gray-400 text-xs">-</span>
+                                                <span class="text-gray-400 text-sm">-</span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $payment->created_at->format('d M Y H:i') }}</td>
